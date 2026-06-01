@@ -16,5 +16,5 @@ python-dateutil>=2.8
 # Produccion (Render)
 gunicorn>=22.0,<22.1
 
-# PostgreSQL (instalar solo si usas PostgreSQL):
-# psycopg2-binary>=2.9,<2.10
+# PostgreSQL
+psycopg2-binary>=2.9,<2.10
