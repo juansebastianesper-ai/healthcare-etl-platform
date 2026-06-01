@@ -1,8 +1,9 @@
 let currentPage = 1;
 
-async function loadPacientes(page = 1) {
+async function loadPacientes(page) {
     const tbody = document.getElementById('pacientesBody');
     if (!tbody) return;
+    if (typeof page !== 'number') page = currentPage;
     currentPage = page;
 
     const params = new URLSearchParams({ page });
