@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Pacientes{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> Pacientes</h2>
+        <div>
+            <button class="btn btn-primary" onclick="exportPacientes()">
+                <i class="bi bi-download"></i> Exportar
+            </button>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="searchPaciente" placeholder="Buscar paciente...">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="filterRiesgo">
+                        <option value="">Todos los Riesgos</option>
+                        <option value="BAJO">Bajo</option>
+                        <option value="MEDIO">Medio</option>
+                        <option value="ALTO">Alto</option>
+                        <option value="CRITICO">Crítico</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="filterSexo">
+                        <option value="">Todos los Sexos</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="filterIMC">
+                        <option value="">Clasificación IMC</option>
+                        <option value="BAJO_PESO">Bajo Peso</option>
+                        <option value="NORMAL">Normal</option>
+                        <option value="SOBREPESO">Sobrepeso</option>
+                        <option value="OBESIDAD_I">Obesidad I</option>
+                        <option value="OBESIDAD_II">Obesidad II</option>
+                        <option value="OBESIDAD_III">Obesidad III</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-outline-primary w-100" onclick="loadPacientes()">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="pacientesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Sexo</th>
+                            <th>IMC</th>
+                            <th>Glucosa</th>
+                            <th>Colesterol</th>
+                            <th>Riesgo</th>
+                            <th>Fumador</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pacientesBody">
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">Cargando pacientes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav>
+                <ul class="pagination justify-content-center" id="pacientesPagination"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="predictModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Predicción de Riesgo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="predictResult">
+                <p class="text-muted">Cargando predicción...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'js/pacientes.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadPacientes();
+    document.getElementById('filterRiesgo').addEventListener('change', loadPacientes);
+    document.getElementById('filterSexo').addEventListener('change', loadPacientes);
+    document.getElementById('filterIMC').addEventListener('change', loadPacientes);
+    document.getElementById('searchPaciente').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') loadPacientes();
+    });
+});
+</script>
+{% endblock %}

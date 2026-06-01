@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-graph-up"></i> Analítica de Datos</h2>
+    </div>
+
+    <div class="row g-3 mb-4" id="kpiAnalytics">
+        <div class="col-md-2">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary" id="kpiTotal">0</h3>
+                    <small class="text-muted">Total Pacientes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-danger">
+                <div class="card-body">
+                    <h3 class="text-danger" id="kpiCriticos">0</h3>
+                    <small class="text-muted">Críticos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning" id="kpiHipertensos">0</h3>
+                    <small class="text-muted">Hipertensos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <h3 class="text-info" id="kpiDiabeticos">0</h3>
+                    <small class="text-muted">Diabéticos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-secondary">
+                <div class="card-body">
+                    <h3 class="text-secondary" id="kpiFumadores">0</h3>
+                    <small class="text-muted">Fumadores</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success" id="kpiRiesgoProm">0</h3>
+                    <small class="text-muted">Riesgo Prom.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Estadísticas Descriptivas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered" id="statsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Variable</th>
+                                    <th>Media</th>
+                                    <th>Mediana</th>
+                                    <th>Moda</th>
+                                    <th>Desv. Std</th>
+                                    <th>Mín</th>
+                                    <th>Máx</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statsBody">
+                                <tr><td colspan="7" class="text-center text-muted">Cargando estadísticas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Segmentación por Riesgo</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="segRiesgoChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Distribución por Edad</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="segEdadChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Distribución IMC</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="segIMCChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'js/charts.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadAnalytics();
+});
+</script>
+{% endblock %}

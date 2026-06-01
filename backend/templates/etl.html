@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}ETL Engine{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-arrow-repeat"></i> Motor ETL</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="bi bi-upload"></i> Subir Archivo
+        </button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6>Total Ejecuciones</h6>
+                    <h3 id="totalRuns">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6>Completadas</h6>
+                    <h3 id="completedRuns">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h6>Con Errores</h6>
+                    <h3 id="errorRuns">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6>Registros Cargados</h6>
+                    <h3 id="totalRecords">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#history" data-bs-toggle="tab">Historial</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#sources" data-bs-toggle="tab">Fuentes</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="history">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Archivo</th>
+                                    <th>Fuente</th>
+                                    <th>Estado</th>
+                                    <th>Procesados</th>
+                                    <th>Limpios</th>
+                                    <th>Errores</th>
+                                    <th>Inicio</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="etlHistoryBody">
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">Cargando historial...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="sources">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Activo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="etlSourcesBody">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Cargando fuentes...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir Archivo ETL</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="etlUploadForm">
+                    <div class="mb-3">
+                        <label class="form-label">Archivo (CSV o Excel)</label>
+                        <input type="file" class="form-control" id="etlFile" accept=".csv,.xlsx,.xls" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la Fuente</label>
+                        <input type="text" class="form-control" id="sourceName" placeholder="Ej: Hospital General">
+                    </div>
+                    <div class="progress mb-3 d-none" id="uploadProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">
+                            Procesando...
+                        </div>
+                    </div>
+                    <div id="uploadResult"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="uploadETL()">
+                    <i class="bi bi-play-fill"></i> Ejecutar ETL
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'js/etl.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadETLHistory();
+    loadETLSources();
+});
+</script>
+{% endblock %}

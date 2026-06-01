@@ -1,0 +1,31 @@
+nombre,edad,sexo,peso,altura,presion_sistolica,presion_diastolica,glucosa,colesterol,frecuencia_cardiaca,saturacion_oxigeno,fumador,diagnostico
+Juan Pérez,45,M,82,1.75,135,85,110,220,72,98,No,Hipertensión leve
+María García,52,F,68,1.62,145,90,140,250,78,96,No,Diabetes tipo 2
+Carlos López,38,M,90,1.80,120,80,95,190,65,99,Si,Asma
+Ana Martínez,28,F,55,1.60,110,70,85,170,70,99,No,Ninguno
+Pedro Rodríguez,67,M,78,1.72,160,95,180,280,85,94,Si,Diabetes e Hipertensión
+Laura Sánchez,33,F,72,1.65,125,82,105,210,75,98,No,Ninguno
+Miguel Ángel,55,M,95,1.78,150,92,200,310,88,93,Si,Hipertensión severa
+Sofía Torres,22,F,60,1.68,115,75,90,180,68,99,No,Ninguno
+Roberto Díaz,70,M,85,1.70,170,100,250,290,92,90,Si,Insuficiencia cardíaca
+Isabel Ramírez,41,F,63,1.58,130,85,120,230,76,97,No,Hipotiroidismo
+Fernando Cruz,48,M,88,1.76,140,88,155,260,80,96,Si,Riesgo cardiovascular
+Patricia Morales,31,F,58,1.63,118,78,95,190,72,99,No,Ninguno
+Alejandro Vargas,60,M,92,1.74,165,98,220,300,90,92,Si,EPOC
+Dolores Hernández,75,F,70,1.55,175,105,280,310,95,88,No,Insuficiencia renal
+José Luis,25,M,77,1.79,120,80,88,175,65,100,No,Ninguno
+Carmen Flores,56,F,80,1.60,148,92,190,270,82,95,Si,Obesidad mórbida
+Ricardo Mendoza,43,M,85,1.73,138,86,130,240,78,97,Si,Dislipidemia
+Verónica Ríos,29,F,62,1.66,112,72,92,185,70,99,No,Ninguno
+Alberto Castillo,63,M,76,1.71,155,94,210,285,88,93,Si,Cardiopatía isquémica
+Gabriela Ortiz,36,F,67,1.64,128,84,115,225,74,98,No,Migraña crónica
+Fernanda Ruiz,44,F,71,1.61,142,88,170,255,80,96,Si,Síndrome metabólico
+Héctor Paredes,50,M,93,1.77,158,96,230,295,86,91,Si,Diabetes complicada
+María Elena,68,F,65,1.57,168,102,260,305,94,89,No,Hepatitis crónica
+Raúl Sánchez,31,M,80,1.74,122,82,100,200,70,98,No,Ninguno
+Daniela Torres,40,F,59,1.62,116,76,98,195,72,99,No,Ninguno
+Arturo Vega,57,M,97,1.75,162,97,240,290,90,92,Si,Hipertensión severa
+Silvia Castro,35,F,73,1.63,132,86,125,235,78,97,Si,Ansiedad
+Guillermo Navarro,46,M,84,1.78,136,84,135,245,76,96,No,Artritis
+Rosa María,27,F,61,1.65,114,74,88,178,68,100,No,Ninguno
+Víctor Soto,72,M,79,1.69,172,103,270,300,93,87,Si,Insuficiencia cardíaca avanzada

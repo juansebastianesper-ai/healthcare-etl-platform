@@ -1,0 +1,108 @@
+let currentPage = 1;
+
+async function loadPacientes(page = 1) {
+    const tbody = document.getElementById('pacientesBody');
+    if (!tbody) return;
+    currentPage = page;
+
+    const params = new URLSearchParams({
+        page: page,
+        page_size: 25,
+        search: document.getElementById('searchPaciente')?.value || '',
+        riesgo: document.getElementById('filterRiesgo')?.value || '',
+        sexo: document.getElementById('filterSexo')?.value || '',
+        imc_clasificacion: document.getElementById('filterIMC')?.value || '',
+    });
+
+    showLoading('pacientesBody');
+
+    try {
+        const response = await apiRequest(`/etl/pacientes/?${params}`);
+        if (!response.ok) throw new Error('Error al cargar pacientes');
+        const data = await response.json();
+
+        if (data.results?.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">No se encontraron pacientes</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.results.map(p => `
+            <tr>
+                <td>${p.id}</td>
+                <td><strong>${p.nombre}</strong></td>
+                <td>${p.edad}</td>
+                <td>${p.sexo === 'M' ? 'Masculino' : 'Femenino'}</td>
+                <td>${p.imc?.toFixed(1) || 'N/A'}</td>
+                <td>${p.glucosa?.toFixed(0) || 'N/A'}</td>
+                <td>${p.colesterol?.toFixed(0) || 'N/A'}</td>
+                <td>${getBadgeHTML(p.riesgo)}</td>
+                <td>${p.fumador ? '<span class="badge bg-danger">Sí</span>' : '<span class="badge bg-secondary">No</span>'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="predictPaciente(${p.id})">
+                        <i class="bi bi-cpu"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        updatePagination(data.count, page);
+    } catch (error) {
+        handleApiError(error);
+    }
+}
+
+function updatePagination(total, page) {
+    const pagination = document.getElementById('pacientesPagination');
+    if (!pagination) return;
+
+    const totalPages = Math.ceil(total / 25);
+    if (totalPages <= 1) { pagination.innerHTML = ''; return; }
+
+    let html = '';
+    if (page > 1) {
+        html += `<li class="page-item"><button class="page-link" onclick="loadPacientes(${page - 1})">Anterior</button></li>`;
+    }
+    for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+        html += `<li class="page-item ${i === page ? 'active' : ''}"><button class="page-link" onclick="loadPacientes(${i})">${i}</button></li>`;
+    }
+    if (page < totalPages) {
+        html += `<li class="page-item"><button class="page-link" onclick="loadPacientes(${page + 1})">Siguiente</button></li>`;
+    }
+    pagination.innerHTML = html;
+}
+
+async function predictPaciente(id) {
+    try {
+        const response = await apiRequest('/ml/predictions/predict_patient/', {
+            method: 'POST',
+            body: { paciente_id: id },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const alertClass = {
+                BAJO: 'alert-success',
+                MEDIO: 'alert-warning',
+                ALTO: 'alert-orange',
+                CRITICO: 'alert-danger'
+            };
+
+            document.getElementById('predictResult').innerHTML = `
+                <div class="${alertClass[data.prediccion] || 'alert-info'}">
+                    <h5>Predicción: ${data.prediccion}</h5>
+                    <p>Probabilidad: ${(data.probabilidad * 100).toFixed(1)}%</p>
+                    <hr>
+                    ${Object.entries(data.probabilidades || {}).map(([k, v]) =>
+                        `<small>${k}: ${(v * 100).toFixed(1)}%</small><br>`
+                    ).join('')}
+                </div>`;
+            new bootstrap.Modal(document.getElementById('predictModal')).show();
+        }
+    } catch (error) {
+        handleApiError(error);
+    }
+}
+
+async function exportPacientes() {
+    window.open('/api/reports/excel/pacientes/', '_blank');
+}

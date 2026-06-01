@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard Clínico</h2>
+        <div>
+            <span class="text-muted" id="lastUpdate"></span>
+            <button class="btn btn-outline-primary ms-2" onclick="refreshDashboard()">
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4" id="kpiCards">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Total Pacientes</h6>
+                            <h2 class="card-title mb-0" id="totalPacientes">0</h2>
+                        </div>
+                        <i class="bi bi-people-fill text-primary fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Pacientes Críticos</h6>
+                            <h2 class="card-title mb-0 text-danger" id="pacientesCriticos">0</h2>
+                        </div>
+                        <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Riesgo Promedio</h6>
+                            <h2 class="card-title mb-0" id="riesgoPromedio">0</h2>
+                        </div>
+                        <i class="bi bi-activity text-warning fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">ETL Exitosos</h6>
+                            <h2 class="card-title mb-0 text-success" id="etlExitosos">0</h2>
+                        </div>
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Distribución de Riesgos</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="riesgoChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Por Sexo</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="sexoChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Distribución IMC</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="imcChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-table"></i> Segmentación por Edad</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="edadChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-cpu"></i> Modelo ML</h5>
+                </div>
+                <div class="card-body">
+                    <div id="mlInfo">
+                        <p class="text-muted">Cargando información del modelo...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Última Ejecución ETL</h5>
+                </div>
+                <div class="card-body">
+                    <div id="etlInfo">
+                        <p class="text-muted">No hay ejecuciones recientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    refreshDashboard();
+});
+</script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
