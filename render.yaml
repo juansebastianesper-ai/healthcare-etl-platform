@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: healthcare-etl-platform
+    runtime: python
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        value: -p)l6@8ot@f&n-v%@atr)tfp5lhwsnn&$i3t4^0l$e(n8tmdry
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com,localhost"
+      - key: USE_POSTGRES
+        value: "True"
+      - key: DB_NAME
+        fromService:
+          type: postgresql
+          name: healthcare-db
+          property: database
+      - key: DB_USER
+        fromService:
+          type: postgresql
+          name: healthcare-db
+          property: user
+      - key: DB_PASSWORD
+        fromService:
+          type: postgresql
+          name: healthcare-db
+          property: password
+      - key: DB_HOST
+        fromService:
+          type: postgresql
+          name: healthcare-db
+          property: host
+      - key: DB_PORT
+        fromService:
+          type: postgresql
+          name: healthcare-db
+          property: port
+
+  - type: postgresql
+    name: healthcare-db
+    plan: free
+    ipAllowList: []
