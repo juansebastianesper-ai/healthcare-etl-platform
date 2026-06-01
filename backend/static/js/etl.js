@@ -6,14 +6,15 @@ async function loadETLHistory() {
         const response = await apiRequest('/etl/runs/history/');
         if (!response.ok) throw new Error('Error al cargar historial');
         const runs = await response.json();
+        const items = runs.results || runs;
 
-        if (runs.length === 0) {
+        if (items.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No hay ejecuciones ETL</td></tr>';
             return;
         }
 
         const estados = { COMPLETADO: 'success', ERROR: 'danger', PROCESANDO: 'info', PENDIENTE: 'secondary' };
-        tbody.innerHTML = runs.map(r => `
+        tbody.innerHTML = items.map(r => `
             <tr>
                 <td>${r.id}</td>
                 <td>${r.archivo?.split('/').pop() || r.archivo}</td>
@@ -27,7 +28,7 @@ async function loadETLHistory() {
             </tr>
         `).join('');
 
-        updateETLStats(runs);
+        updateETLStats(items);
     } catch (error) {
         handleApiError(error);
     }
@@ -41,13 +42,14 @@ async function loadETLSources() {
         const response = await apiRequest('/etl/sources/');
         if (!response.ok) throw new Error('Error al cargar fuentes');
         const sources = await response.json();
+        const items = sources.results || sources;
 
-        if (sources.length === 0) {
+        if (items.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay fuentes registradas</td></tr>';
             return;
         }
 
-        tbody.innerHTML = sources.map(s => `
+        tbody.innerHTML = items.map(s => `
             <tr>
                 <td>${s.id}</td>
                 <td>${s.nombre}</td>
