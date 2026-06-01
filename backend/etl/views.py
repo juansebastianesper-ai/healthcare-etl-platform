@@ -19,7 +19,7 @@ logger = logging.getLogger('etl')
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    filterset_fields = ['riesgo', 'sexo', 'fumador', 'imc_clasificacion']
+    filterset_fields = ['riesgo', 'sexo', 'fumador', 'peso', 'imc_clasificacion']
     search_fields = ['nombre', 'diagnostico']
     ordering_fields = ['edad', 'imc', 'glucosa', 'colesterol', 'fecha_registro']
 

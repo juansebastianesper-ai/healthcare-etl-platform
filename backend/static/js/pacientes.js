@@ -5,14 +5,15 @@ async function loadPacientes(page = 1) {
     if (!tbody) return;
     currentPage = page;
 
-    const params = new URLSearchParams({
-        page: page,
-        page_size: 25,
-        search: document.getElementById('searchPaciente')?.value || '',
-        riesgo: document.getElementById('filterRiesgo')?.value || '',
-        sexo: document.getElementById('filterSexo')?.value || '',
-        imc_clasificacion: document.getElementById('filterIMC')?.value || '',
-    });
+    const params = new URLSearchParams({ page });
+    const search = document.getElementById('searchPaciente')?.value?.trim();
+    if (search) params.set('search', search);
+    const riesgo = document.getElementById('filterRiesgo')?.value;
+    if (riesgo) params.set('riesgo', riesgo);
+    const sexo = document.getElementById('filterSexo')?.value;
+    if (sexo) params.set('sexo', sexo);
+    const imc = document.getElementById('filterIMC')?.value;
+    if (imc) params.set('imc_clasificacion', imc);
 
     showLoading('pacientesBody');
 
