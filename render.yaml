@@ -1,3 +1,8 @@
+databases:
+  - name: healthcare-db
+    plan: free
+    ipAllowList: []
+
 services:
   - type: web
     name: healthcare-etl-platform
@@ -15,32 +20,22 @@ services:
       - key: USE_POSTGRES
         value: "True"
       - key: DB_NAME
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: healthcare-db
           property: database
       - key: DB_USER
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: healthcare-db
           property: user
       - key: DB_PASSWORD
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: healthcare-db
           property: password
       - key: DB_HOST
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: healthcare-db
           property: host
       - key: DB_PORT
-        fromService:
-          type: postgresql
+        fromDatabase:
           name: healthcare-db
           property: port
-
-  - type: postgresql
-    name: healthcare-db
-    plan: free
-    ipAllowList: []
