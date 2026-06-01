@@ -33,13 +33,14 @@ async function loadPredictionsHistory() {
         const response = await apiRequest('/ml/predictions/history/');
         if (!response.ok) throw new Error('Error al cargar historial');
         const predictions = await response.json();
+        const items = predictions.results || predictions;
 
-        if (predictions.length === 0) {
+        if (items.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Sin predicciones aún</td></tr>';
             return;
         }
 
-        tbody.innerHTML = predictions.map(p => `
+        tbody.innerHTML = items.map(p => `
             <tr>
                 <td>${p.id}</td>
                 <td>${p.paciente}</td>
