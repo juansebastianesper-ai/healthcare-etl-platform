@@ -61,13 +61,67 @@ class DataTransformer:
     def _normalizar_columnas(self, df):
         df.columns = [col.strip().lower().replace(' ', '_').lstrip('\ufeff') for col in df.columns]
         mapping = {
+            'nombre': 'nombre', 'nombre_completo': 'nombre', 'nombres': 'nombre',
+            'nombre_del_paciente': 'nombre', 'paciente': 'nombre', 'name': 'nombre',
+            'nombres_y_apellidos': 'nombre', 'nombre_paciente': 'nombre',
+
+            'edad': 'edad', 'edad_(años)': 'edad', 'edad_años': 'edad',
+            'edad_en_años': 'edad', 'age': 'edad', 'años': 'edad',
+
+            'sexo': 'sexo', 'genero': 'sexo', 'género': 'sexo', 'sex': 'sexo',
+
+            'peso': 'peso', 'peso_(kg)': 'peso', 'peso_kg': 'peso',
+            'weight': 'peso', 'peso_corporal': 'peso',
+
+            'altura': 'altura', 'altura_(m)': 'altura', 'altura_m': 'altura',
+            'talla': 'altura', 'estatura': 'altura', 'height': 'altura',
+
+            'presion_sistolica': 'presion_sistolica',
             'presión_sistólica': 'presion_sistolica',
+            'sistolica': 'presion_sistolica', 'sistólica': 'presion_sistolica',
+            'presion_arterial_sistolica': 'presion_sistolica',
+            'presión_arterial_sistólica': 'presion_sistolica',
+            'systolic': 'presion_sistolica', 'systolic_bp': 'presion_sistolica',
+            'pas': 'presion_sistolica',
+
+            'presion_diastolica': 'presion_diastolica',
             'presión_diastólica': 'presion_diastolica',
+            'diastolica': 'presion_diastolica', 'diastólica': 'presion_diastolica',
+            'presion_arterial_diastolica': 'presion_diastolica',
+            'presión_arterial_diastólica': 'presion_diastolica',
+            'diastolic': 'presion_diastolica', 'diastolic_bp': 'presion_diastolica',
+            'pad': 'presion_diastolica',
+
+            'glucosa': 'glucosa', 'glucosa_(mg/dl)': 'glucosa',
+            'glucosa_mg/dl': 'glucosa', 'glucosa_mg_dl': 'glucosa',
+            'glucose': 'glucosa', 'nivel_glucosa': 'glucosa',
+            'azúcar_en_sangre': 'glucosa', 'glucosa_en_ayunas': 'glucosa',
+
+            'colesterol': 'colesterol', 'colesterol_(mg/dl)': 'colesterol',
+            'colesterol_mg/dl': 'colesterol', 'colesterol_mg_dl': 'colesterol',
+            'cholesterol': 'colesterol', 'colesterol_total': 'colesterol',
+            'nivel_colesterol': 'colesterol',
+
+            'frecuencia_cardiaca': 'frecuencia_cardiaca',
             'frecuencia_cardíaca': 'frecuencia_cardiaca',
-            'saturación_oxígeno': 'saturacion_oxigeno',
+            'frecuencia_cardiaca_(lpm)': 'frecuencia_cardiaca',
+            'frecuencia_cardiaca_lpm': 'frecuencia_cardiaca',
+            'heart_rate': 'frecuencia_cardiaca', 'pulso': 'frecuencia_cardiaca',
+            'fc': 'frecuencia_cardiaca',
+            'frecuencia_cardiaca_bpm': 'frecuencia_cardiaca',
+
             'saturacion_oxigeno': 'saturacion_oxigeno',
-            'colesterol_total': 'colesterol',
-            'glucosa_en_ayunas': 'glucosa',
+            'saturación_oxígeno': 'saturacion_oxigeno',
+            'saturacion_oxigeno_(%)': 'saturacion_oxigeno',
+            'saturacion_oxigeno_%': 'saturacion_oxigeno',
+            'oxygen_saturation': 'saturacion_oxigeno',
+            'spo2': 'saturacion_oxigeno', 'sp_o2': 'saturacion_oxigeno',
+            'sat_oxigeno': 'saturacion_oxigeno', 'o2_sat': 'saturacion_oxigeno',
+            'oxigenacion': 'saturacion_oxigeno',
+
+            'fumador': 'fumador', 'fuma': 'fumador', 'tabaquismo': 'fumador',
+            'habito_tabaquico': 'fumador', 'hábito_tabáquico': 'fumador',
+            'es_fumador': 'fumador', 'smoker': 'fumador', 'smoking': 'fumador',
         }
         df = df.rename(columns=mapping)
         for col in COLUMNAS_REQUERIDAS:
