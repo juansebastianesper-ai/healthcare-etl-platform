@@ -20,6 +20,7 @@ db.sqlite3
 media/
 staticfiles/
 logs/
+!logs/.gitkeep
 
 # IDE
 .vscode/
