@@ -127,3 +127,18 @@ async function viewETLLog(id) {
         handleApiError(error);
     }
 }
+
+async function deleteAllData() {
+    if (!confirm('¿Borrar todos los pacientes, ejecuciones ETL y fuentes?')) return;
+
+    try {
+        const response = await apiRequest('/etl/runs/delete_all/', { method: 'DELETE' });
+        if (!response.ok) throw new Error('Error al borrar datos');
+        const data = await response.json();
+        showToast(data.message, 'success');
+        loadETLHistory();
+        loadETLSources();
+    } catch (error) {
+        handleApiError(error);
+    }
+}

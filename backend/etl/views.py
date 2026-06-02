@@ -91,6 +91,17 @@ class ETLRunViewSet(viewsets.ModelViewSet):
             logger.error(f'Error en ETL upload: {str(e)}')
             raise ETLException(f'Error procesando archivo: {str(e)}')
 
+    @action(detail=False, methods=['delete'])
+    def delete_all(self, request):
+        from django.db import transaction
+        with transaction.atomic():
+            p_count, _ = Patient.objects.all().delete()
+            r_count, _ = ETLRun.objects.all().delete()
+            s_count, _ = ETLSource.objects.all().delete()
+        return Response({
+            'message': f'Borrados: {p_count} pacientes, {r_count} ejecuciones, {s_count} fuentes',
+        })
+
     @action(detail=True, methods=['get'])
     def log(self, request, pk=None):
         etl_run = self.get_object()
