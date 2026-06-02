@@ -93,11 +93,15 @@ class ETLRunViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['delete'])
     def delete_all(self, request):
-        from django.db import transaction
+        from django.db import transaction, connection
         with transaction.atomic():
             p_count, _ = Patient.objects.all().delete()
             r_count, _ = ETLRun.objects.all().delete()
             s_count, _ = ETLSource.objects.all().delete()
+            tables = ['etl_patient', 'etl_etlrun', 'etl_etlsource']
+            for table in tables:
+                with connection.cursor() as cursor:
+                    cursor.execute(f"DELETE FROM sqlite_sequence WHERE name='{table}'")
         return Response({
             'message': f'Borrados: {p_count} pacientes, {r_count} ejecuciones, {s_count} fuentes',
         })
