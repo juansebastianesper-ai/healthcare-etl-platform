@@ -135,3 +135,17 @@ async function trainModel() {
         handleApiError(error);
     }
 }
+
+async function deletePredictionsHistory() {
+    if (!confirm('¿Borrar todo el historial de predicciones?')) return;
+
+    try {
+        const response = await apiRequest('/ml/predictions/delete_history/', { method: 'DELETE' });
+        if (!response.ok) throw new Error('Error al borrar historial');
+        const data = await response.json();
+        showToast(data.message, 'success');
+        loadPredictionsHistory();
+    } catch (error) {
+        handleApiError(error);
+    }
+}

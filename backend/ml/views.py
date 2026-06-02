@@ -87,3 +87,11 @@ class PredictionViewSet(viewsets.GenericViewSet):
             return self.get_paginated_response(data)
         serializer = self.get_serializer(predictions, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['delete'])
+    def delete_history(self, request):
+        from django.db import connection
+        count, _ = Prediction.objects.all().delete()
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='ml_prediction'")
+        return Response({'message': f'Historial borrado: {count} predicciones eliminadas'})
