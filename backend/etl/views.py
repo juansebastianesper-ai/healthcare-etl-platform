@@ -1,5 +1,7 @@
 import logging
+import csv
 import pandas as pd
+from io import StringIO
 from rest_framework import status, viewsets, generics, parsers
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +14,18 @@ from .serializers import (
 from .engine import ETLEngine
 from core.exceptions import ETLException
 from authentication.permissions import IsAdmin, IsAnalista, IsMedico
+
+
+def _read_csv(file_obj):
+    raw = file_obj.read()
+    try:
+        content = raw.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        content = raw.decode('latin1')
+    dialect = csv.Sniffer().sniff(content[:1024])
+    df = pd.read_csv(StringIO(content), sep=dialect.delimiter)
+    file_obj.seek(0)
+    return df
 
 logger = logging.getLogger('etl')
 
@@ -56,7 +70,7 @@ class ETLRunViewSet(viewsets.ModelViewSet):
 
         try:
             if archivo.name.endswith('.csv'):
-                df = pd.read_csv(archivo)
+                df = _read_csv(archivo)
             elif archivo.name.endswith(('.xlsx', '.xls')):
                 df = pd.read_excel(archivo, engine='openpyxl')
             else:

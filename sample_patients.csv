@@ -1,0 +1,21 @@
+nombre,edad,sexo,peso,altura,presion_sistolica,presion_diastolica,glucosa,colesterol,frecuencia_cardiaca,saturacion_oxigeno,fumador,diagnostico
+Luis Martínez,45,M,82,1.75,130,85,110,220,72,98,No,Hipertensión controlada
+María García,34,F,65,1.62,120,80,95,190,68,99,No,Ninguno
+Carlos López,58,M,95,1.78,155,95,180,280,85,94,Sí,Diabetes tipo 2
+Ana Rodríguez,28,F,58,1.60,110,70,88,170,65,99,No,Ninguno
+Pedro Hernández,62,M,78,1.72,145,90,160,250,78,95,Sí,Colesterol alto
+Sofía Díaz,41,F,72,1.65,135,85,105,210,75,97,No,Hipotiroidismo
+Juan Pérez,50,M,90,1.80,170,100,200,320,88,92,Sí,Diabetes e hipertensión
+Laura Sánchez,37,F,55,1.58,115,75,92,185,70,98,No,Ninguno
+Roberto Gómez,55,M,88,1.73,160,95,190,300,82,93,Sí,Enfermedad coronaria
+Carmen Torres,48,F,70,1.63,140,88,130,230,76,96,No,Artritis reumatoide
+Diego Ramírez,63,M,85,1.76,150,92,175,260,80,94,No,Insuficiencia renal
+Valentina Ortiz,31,F,60,1.64,118,78,98,195,69,99,No,Ninguno
+Miguel Ángel Ruiz,52,M,92,1.81,165,102,210,310,86,90,Sí,EPOC
+Gabriela Morales,27,F,63,1.66,112,72,90,180,67,99,No,Ninguno
+Fernando Castillo,68,M,76,1.70,148,88,155,240,79,93,Sí,Cardiopatía isquémica
+Isabel Vargas,39,F,68,1.61,125,82,108,205,73,97,No,Ansiedad
+Alejandro Mendoza,44,M,80,1.74,138,86,120,215,74,96,Sí,Colitis
+Patricia Ríos,56,F,74,1.68,142,88,145,235,77,95,No,Osteoporosis
+Gustavo Herrera,60,M,98,1.79,175,105,250,340,90,88,Sí,Insuficiencia cardíaca
+Daniela Castro,33,F,62,1.63,115,74,96,188,71,98,No,Ninguno

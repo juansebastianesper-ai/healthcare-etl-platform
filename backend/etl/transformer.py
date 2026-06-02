@@ -59,7 +59,7 @@ class DataTransformer:
         }
 
     def _normalizar_columnas(self, df):
-        df.columns = [col.strip().lower().replace(' ', '_') for col in df.columns]
+        df.columns = [col.strip().lower().replace(' ', '_').lstrip('\ufeff') for col in df.columns]
         mapping = {
             'presión_sistólica': 'presion_sistolica',
             'presión_diastólica': 'presion_diastolica',
