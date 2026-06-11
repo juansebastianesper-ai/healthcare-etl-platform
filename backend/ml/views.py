@@ -20,7 +20,7 @@ class MLModelViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ['activo']
     ordering = ['-entrenado_en']
 
-    @action(detail=False, methods=['post'], permission_classes=[IsAdmin])
+    @action(detail=False, methods=['post'], permission_classes=[IsAnalista])
     def train(self, request):
         try:
             trainer = ModelTrainer()
@@ -44,7 +44,7 @@ class MLModelViewSet(viewsets.ReadOnlyModelViewSet):
 class PredictionViewSet(viewsets.GenericViewSet):
     queryset = Prediction.objects.all()
     serializer_class = PredictionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAnalista]
 
     def list(self, request):
         predictions = self.get_queryset()
@@ -88,7 +88,7 @@ class PredictionViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(predictions, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=['delete'], permission_classes=[IsAdmin])
     def delete_history(self, request):
         from django.db import connection
         count, _ = Prediction.objects.all().delete()

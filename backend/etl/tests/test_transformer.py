@@ -51,6 +51,19 @@ class DataTransformerTest(TestCase):
         result_df, _ = self.transformer.transform(df)
         self.assertEqual(result_df.iloc[0]['riesgo'], 'CRITICO')
 
+    def test_corregir_sexo_por_nombre_con_nombre_completo(self):
+        df = pd.DataFrame([{
+            'nombre': 'De Jesus Perez', 'edad': 35, 'sexo': 'O',
+            'peso': 72.0, 'altura': 1.70, 'presion_sistolica': 120,
+            'presion_diastolica': 80, 'glucosa': 100, 'colesterol': 200,
+            'frecuencia_cardiaca': 70, 'saturacion_oxigeno': 98,
+            'fumador': 'No', 'diagnostico': 'Control',
+        }])
+
+        result_df, _ = self.transformer.transform(df)
+
+        self.assertEqual(result_df.iloc[0]['sexo'], 'M')
+
     def test_handles_null_values(self):
         df = pd.DataFrame([{
             'nombre': 'Null Test', 'edad': None, 'sexo': None,

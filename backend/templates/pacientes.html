@@ -45,6 +45,12 @@
                     </select>
                 </div>
                 <div class="col-md-1">
+                    <input type="number" class="form-control" id="filterIMCMin" placeholder="IMC min" step="0.1">
+                </div>
+                <div class="col-md-1">
+                    <input type="number" class="form-control" id="filterIMCMax" placeholder="IMC max" step="0.1">
+                </div>
+                <div class="col-md-1">
                     <button class="btn btn-outline-primary w-100" onclick="loadPacientes()">
                         <i class="bi bi-search"></i>
                     </button>
@@ -60,20 +66,22 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
+                            <th>Nombre y Apellido</th>
                             <th>Edad</th>
                             <th>Sexo</th>
                             <th>IMC</th>
                             <th>Glucosa</th>
                             <th>Colesterol</th>
+                            <th>Presión Sistólica</th>
+                            <th>Presión Diastólica</th>
                             <th>Riesgo</th>
                             <th>Fumador</th>
-                            <th>Acciones</th>
+                            <th>Predicción</th>
                         </tr>
                     </thead>
                     <tbody id="pacientesBody">
                         <tr>
-                            <td colspan="10" class="text-center text-muted">Cargando pacientes...</td>
+                            <td colspan="12" class="text-center text-muted">Cargando pacientes...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -108,9 +116,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filterRiesgo').addEventListener('change', loadPacientes);
     document.getElementById('filterSexo').addEventListener('change', loadPacientes);
     document.getElementById('filterIMC').addEventListener('change', loadPacientes);
-    document.getElementById('searchPaciente').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') loadPacientes();
-    });
+    const searchPaciente = document.getElementById('searchPaciente');
+    searchPaciente.addEventListener('keyup', debounce(function() {
+        loadPacientes(1);
+    }, 300));
 });
 </script>
 {% endblock %}

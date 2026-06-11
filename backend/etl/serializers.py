@@ -14,7 +14,8 @@ class PatientListSerializer(serializers.ModelSerializer):
         model = Patient
         fields = [
             'id', 'nombre', 'edad', 'sexo', 'imc', 'imc_clasificacion',
-            'riesgo', 'glucosa', 'colesterol', 'fumador', 'fecha_registro'
+            'riesgo', 'glucosa', 'colesterol', 'presion_sistolica',
+            'presion_diastolica', 'fumador', 'fecha_registro'
         ]
 
 

@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Patient, ETLRun, ETLSource
+from .filters import PatientFilter
 from .serializers import (
     PatientSerializer, PatientListSerializer, ETLRunSerializer,
     ETLRunHistorySerializer, ETLSourceSerializer
@@ -33,9 +34,9 @@ logger = logging.getLogger('etl')
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    filterset_fields = ['riesgo', 'sexo', 'fumador', 'peso', 'imc_clasificacion']
+    filterset_class = PatientFilter
     search_fields = ['nombre', 'diagnostico']
-    ordering_fields = ['edad', 'imc', 'glucosa', 'colesterol', 'fecha_registro']
+    ordering_fields = ['id', 'edad', 'imc', 'glucosa', 'colesterol', 'fecha_registro']
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -91,7 +92,7 @@ class ETLRunViewSet(viewsets.ModelViewSet):
             logger.error(f'Error en ETL upload: {str(e)}')
             raise ETLException(f'Error procesando archivo: {str(e)}')
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=['delete'], permission_classes=[IsAdmin])
     def delete_all(self, request):
         from django.db import transaction, connection
         with transaction.atomic():

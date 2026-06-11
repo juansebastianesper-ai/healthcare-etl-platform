@@ -1,26 +1,15 @@
-let segRiesgoChart = null;
-let segEdadChart = null;
-let segIMCChart = null;
-
 async function loadAnalytics() {
     try {
-        const [kpiResp, statsResp, segRiesgoResp, segEdadResp, segIMCResp] = await Promise.all([
+        const [kpiResp, statsResp] = await Promise.all([
             apiRequest('/analytics/kpis/'),
             apiRequest('/analytics/estadisticas/'),
-            apiRequest('/analytics/segmentacion/riesgo/'),
-            apiRequest('/analytics/segmentacion/edad/'),
-            apiRequest('/analytics/segmentacion/imc/'),
         ]);
 
         const kpis = await kpiResp.json();
         const stats = await statsResp.json();
-        const segRiesgo = await segRiesgoResp.json();
-        const segEdad = await segEdadResp.json();
-        const segIMC = await segIMCResp.json();
 
         updateKPIValues(kpis);
         updateStatsTable(stats);
-        createSegCharts(segRiesgo, segEdad, segIMC);
 
     } catch (error) {
         handleApiError(error);
@@ -61,71 +50,4 @@ function updateStatsTable(stats) {
     }).join('');
 }
 
-function createSegCharts(segRiesgo, segEdad, segIMC) {
-    const ctx1 = document.getElementById('segRiesgoChart');
-    if (ctx1) {
-        if (segRiesgoChart) segRiesgoChart.destroy();
-        segRiesgoChart = new Chart(ctx1, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(segRiesgo),
-                datasets: [{
-                    data: Object.values(segRiesgo),
-                    backgroundColor: ['#198754', '#ffc107', '#fd7e14', '#dc3545'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                },
-            }
-        });
-    }
 
-    const ctx2 = document.getElementById('segEdadChart');
-    if (ctx2) {
-        if (segEdadChart) segEdadChart.destroy();
-        segEdadChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(segEdad),
-                datasets: [{
-                    label: 'Pacientes',
-                    data: Object.values(segEdad).map(s => s.total),
-                    backgroundColor: ['#0d6efd', '#6c757d', '#ffc107', '#fd7e14', '#dc3545'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    }
-
-    const ctx3 = document.getElementById('segIMCChart');
-    if (ctx3) {
-        if (segIMCChart) segIMCChart.destroy();
-        const labels = {
-            'BAJO_PESO': 'Bajo Peso', 'NORMAL': 'Normal', 'SOBREPESO': 'Sobrepeso',
-            'OBESIDAD_I': 'Obesidad I', 'OBESIDAD_II': 'Obesidad II', 'OBESIDAD_III': 'Obesidad III'
-        };
-        segIMCChart = new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(segIMC).map(k => labels[k] || k),
-                datasets: [{
-                    label: 'Pacientes',
-                    data: Object.values(segIMC),
-                    backgroundColor: ['#198754', '#0d6efd', '#ffc107', '#fd7e14', '#dc3545', '#6f42c1'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    }
-}

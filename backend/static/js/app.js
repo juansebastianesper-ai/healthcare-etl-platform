@@ -35,8 +35,16 @@ function formatDate(dateStr) {
 }
 
 function getBadgeHTML(riesgo) {
-    const map = { BAJO: 'success', MEDIO: 'warning', ALTO: 'orange', CRITICO: 'danger' };
-    return `<span class="badge bg-${map[riesgo] || 'secondary'}">${riesgo}</span>`;
+    const map = { BAJO: 'badge-riesgo-BAJO', MEDIO: 'badge-riesgo-MEDIO', ALTO: 'badge-riesgo-ALTO', CRITICO: 'badge-riesgo-CRITICO' };
+    return `<span class="badge ${map[riesgo] || 'bg-secondary'}">${riesgo}</span>`;
+}
+
+function debounce(fn, delay) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
 }
 
 function formatNumber(num) {

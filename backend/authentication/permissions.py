@@ -16,6 +16,11 @@ class IsAnalista(BasePermission):
         return request.user.is_authenticated and request.user.role in ['ANALISTA', 'ADMIN']
 
 
+class IsAdminOrMedico(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ['MEDICO', 'ADMIN']
+
+
 class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.method in ['GET', 'HEAD', 'OPTIONS']:

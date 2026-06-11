@@ -6,7 +6,7 @@ async function loadPacientes(page) {
     if (typeof page !== 'number') page = currentPage;
     currentPage = page;
 
-    const params = new URLSearchParams({ page });
+    const params = new URLSearchParams({ page, ordering: '-id' });
     const search = document.getElementById('searchPaciente')?.value?.trim();
     if (search) params.set('search', search);
     const riesgo = document.getElementById('filterRiesgo')?.value;
@@ -15,6 +15,10 @@ async function loadPacientes(page) {
     if (sexo) params.set('sexo', sexo);
     const imc = document.getElementById('filterIMC')?.value;
     if (imc) params.set('imc_clasificacion', imc);
+    const imcMin = document.getElementById('filterIMCMin')?.value;
+    if (imcMin) params.set('imc_min', imcMin);
+    const imcMax = document.getElementById('filterIMCMax')?.value;
+    if (imcMax) params.set('imc_max', imcMax);
 
     showLoading('pacientesBody');
 
@@ -24,7 +28,7 @@ async function loadPacientes(page) {
         const data = await response.json();
 
         if (data.results?.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">No se encontraron pacientes</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12" class="text-center text-muted">No se encontraron pacientes</td></tr>';
             return;
         }
 
@@ -37,10 +41,12 @@ async function loadPacientes(page) {
                 <td>${p.imc?.toFixed(1) || 'N/A'}</td>
                 <td>${p.glucosa?.toFixed(0) || 'N/A'}</td>
                 <td>${p.colesterol?.toFixed(0) || 'N/A'}</td>
+                <td>${p.presion_sistolica?.toFixed(0) || 'N/A'}</td>
+                <td>${p.presion_diastolica?.toFixed(0) || 'N/A'}</td>
                 <td>${getBadgeHTML(p.riesgo)}</td>
                 <td>${p.fumador ? '<span class="badge bg-danger">Sí</span>' : '<span class="badge bg-secondary">No</span>'}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="predictPaciente(${p.id})">
+                    <button class="btn btn-sm btn-outline-primary" onclick="predictPaciente(${p.id})" title="Predecir riesgo">
                         <i class="bi bi-cpu"></i>
                     </button>
                 </td>

@@ -80,9 +80,11 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Historial de Predicciones</h5>
+                    {% if user.role == 'ADMIN' %}
                     <button class="btn btn-sm btn-outline-danger" onclick="deletePredictionsHistory()">
                         <i class="bi bi-trash"></i> Borrar
                     </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

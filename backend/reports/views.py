@@ -5,12 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .services import ReportService
 from core.exceptions import ReportException
+from authentication.permissions import IsAdminOrMedico
 
 logger = logging.getLogger('healthcare')
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrMedico])
 def report_pdf(request, report_type='general'):
     try:
         buffer = ReportService().export_pdf(report_type)
@@ -23,7 +24,7 @@ def report_pdf(request, report_type='general'):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrMedico])
 def report_csv(request, report_type='pacientes'):
     try:
         return ReportService().export_csv(report_type)
@@ -32,7 +33,7 @@ def report_csv(request, report_type='pacientes'):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrMedico])
 def report_excel(request, report_type='pacientes'):
     try:
         return ReportService().export_excel(report_type)

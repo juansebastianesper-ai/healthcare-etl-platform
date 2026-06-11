@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 import pandas as pd
 import numpy as np
 from core.exceptions import TransformException
@@ -31,6 +32,215 @@ RANGOS_CLINICOS = {
 }
 
 
+def _normalizar_texto(nombre):
+    return unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore').decode('ASCII').upper()
+
+
+def _inferir_sexo_por_nombre(nombre):
+    tokens = [_normalizar_texto(token) for token in str(nombre).split() if token]
+    es_masculino = any(token in NOMBRES_MASCULINOS for token in tokens)
+    es_femenino = any(token in NOMBRES_FEMENINOS for token in tokens)
+
+    if es_masculino and not es_femenino:
+        return 'M'
+    if es_femenino and not es_masculino:
+        return 'F'
+    return None
+
+
+NOMBRES_MASCULINOS = {
+    'AARON', 'ABEL', 'ABELARDO', 'ABRAHAM', 'ADAN', 'ADOLFO', 'ADRIAN', 'CURRO',
+    'AGUSTIN', 'ALAIN', 'ALAN', 'ALBERTO', 'ALCIMEDES', 'ALCIDES', 'ALEJANDRO',
+    'ALEX', 'ALEXANDER', 'ALFONSO', 'ALFREDO', 'ALI', 'ALIPIO', 'ALONSO',
+    'ALVARO', 'AMADEO', 'AMADO', 'AMBROSIO', 'ANASTACIO', 'ANATOLIO',
+    'ANDERSON', 'ANDRES', 'ANDREY', 'ANGEL', 'ANGELO', 'ANIBAL', 'ANSELMO',
+    'ANTENOR', 'ANTHONY', 'ANTONIO', 'APOLINAR', 'ARCADIO', 'ARIEL',
+    'ARISTIDES', 'ARMANDO', 'ARNOLDO', 'ARQUIMEDES', 'ARTEMIO', 'ARTURO',
+    'ASDRUBAL', 'ATILIO', 'AURELIO', 'AURELIANO',
+    'BALDOMERO', 'BALTAZAR', 'BARTOLOME', 'BASILIO', 'BELISARIO',
+    'BENJAMIN', 'BENITO', 'BENIGNO', 'BERNARDO', 'BERTILIO', 'BERTO',
+    'BONIFACIO', 'BORJA', 'BRAULIO', 'BRUNO',
+    'CALIXTO', 'CAMILO', 'CANDELARIO', 'CARLOS', 'CARMELO', 'CESAR',
+    'CIPRIANO', 'CIRILO', 'CLARO', 'CLAUDIO', 'CLEMENTE', 'CONRADO',
+    'CONSTANTINO', 'CRISTIAN', 'CRISTOBAL', 'CRUZ',
+    'DAMIAN', 'DANIEL', 'DARIO', 'DAVID', 'DELFIN', 'DEMETRIO',
+    'DESIDERIO', 'DIEGO', 'DIONISIO', 'DOMINGO', 'DONATO',
+    'EDGAR', 'EDMUNDO', 'EDUARDO', 'EFRAIN', 'ELIAS', 'ELISEO', 'ELOY',
+    'ELMER', 'ELPIDIO', 'EMILIANO', 'EMILIO', 'ENRIQUE',
+    'EPIFANIO', 'ERASMO', 'ERICK', 'ERNESTO', 'ESDRAS', 'ESTEBAN',
+    'ESTANISLAO', 'EUGENIO', 'EUSEBIO', 'EVARISTO', 'EZEQUIEL', 'EZRA',
+    'FABIO', 'FABRICIO', 'FAUSTINO', 'FAUSTO', 'FEDERICO', 'FELICIANO',
+    'FELIPE', 'FELIX', 'FERMIN', 'FERNANDO', 'FIDEL', 'FILIBERTO',
+    'FLAVIO', 'FLORENCIO', 'FLORENTINO', 'FRANCISCO', 'FRANCO',
+    'FREDDY', 'FREDY', 'FROILAN',
+    'GABRIEL', 'GASPAR', 'GENARO', 'GEOVANNY', 'GERARDO', 'GERSON',
+    'GILBERTO', 'GILDARDO', 'GINES', 'GIOVANNI', 'GLAUCO',
+    'GONZALO', 'GREGORIO', 'GUILLERMO', 'GUSTAVO',
+    'HECTOR', 'HELIODORO', 'HERACLIO', 'HERIBERTO', 'HERMELINDO',
+    'HERMES', 'HERNAN', 'HILARIO', 'HOMERO', 'HORACIO', 'HUGO',
+    'HUMBERTO',
+    'IGNACIO', 'INDALECIO', 'HIPOLITO', 'ISAAC', 'ISAIAS', 'ISIDORO',
+    'ISMAEL', 'ISRAEL', 'IVAN',
+    'JACINTO', 'JAIME', 'JAVIER', 'JEREMIAS', 'JERONIMO', 'JESUS',
+    'JOAQUIN', 'JONATHAN', 'JORGE', 'JOSE', 'JOSEF', 'JOSUE',
+    'JUAN', 'JULIAN', 'JULIO', 'JUSTINO',
+    'LAZARO', 'LEANDRO', 'LEON', 'LEONARDO', 'LEONCIO', 'LEOPOLDO',
+    'LEOVIGILDO', 'LINO', 'LISANDRO', 'LORENZO', 'LORETO',
+    'LUCIANO', 'LUCIO', 'LUIS', 'LUCAS',
+    'MACARIO', 'MAGIN', 'MALCOM', 'MANUEL', 'MARCELINO', 'MARCELO',
+    'MARCIAL', 'MARCIANO', 'MARCO', 'MARCOS', 'MARIANO', 'MARIO',
+    'MARTIN', 'MATEO', 'MATIAS', 'MAURICIO', 'MAXIMILIANO',
+    'MAXIMO', 'MELCHOR', 'MELITON', 'MIGUEL', 'MINOR', 'MODESTO',
+    'MOISES', 'NARCISO', 'NATANAEL', 'NELSON',
+    'NEPTALI', 'NESTOR', 'NICANOR', 'NICOLAS', 'NICOMEDES',
+    'NORBERTO', 'NORVIN',
+    'OCTAVIO', 'ODILON', 'OLIVER', 'OMAR', 'ORESTES', 'ORLANDO',
+    'OSCAR', 'OSWALDO', 'OTILIO', 'OTTO', 'OVIDIO',
+    'PABLO', 'PASCUAL', 'PATRICIO', 'PAULINO', 'PEDRO', 'PELAYO',
+    'PEPITO', 'PERCY', 'PIO', 'PLACIDO', 'PLINIO', 'POLICARPO',
+    'PONCIANO', 'PORFIRIO', 'PRIMO', 'PRISCILIANO', 'PROSPERO',
+    'PRUDENCIO',
+    'QUINTIN', 'QUIRINO',
+    'RADAMES', 'RAFAEL', 'RAMIRO', 'RAMON', 'RAUL', 'RAYMUNDO',
+    'REINALDO', 'RENE', 'REYES', 'REYNALDO', 'RICARDO', 'RIGOBERTO',
+    'ROBERTO', 'ROBINSON', 'RODRIGO', 'ROGER', 'ROGELIO', 'ROLANDO',
+    'ROMAN', 'ROMUALDO', 'RONALD', 'RONNY', 'ROQUE', 'ROSENDO',
+    'RUBEN', 'RUFINO', 'RUPERTO', 'RUTILIO',
+    'SALOMON', 'SALVADOR', 'SAMUEL', 'SANTIAGO', 'SANTO',
+    'SATURNINO', 'SAUL', 'SEBASTIAN', 'SECUNDINO', 'SEGUNDO',
+    'SEVERIANO', 'SEVERINO', 'SEVERO', 'SIGFRIDO', 'SILVANO',
+    'SILVESTRE', 'SILVIO', 'SIMON', 'SOCORRO', 'SONNY',
+    'TADEO', 'TELESFORO', 'TEODORO', 'TEODULO', 'TEOFILO',
+    'TERENCIO', 'TIBURCIO', 'TIMOTEO', 'TITO', 'TOMAS', 'TOÑO',
+    'TORIBIO', 'TRISTAN',
+    'ULISES', 'URBANO', 'URIEL',
+    'VALENTIN', 'VALERIANO', 'VICENTE', 'VICTOR', 'VICTORIANO',
+    'VIDAL', 'VINICIO', 'VIRGILIO', 'VLADIMIR',
+    'WALDO', 'WALTER', 'WILBER', 'WILFREDO', 'WILMER', 'WILSON',
+    'XAVIER',
+    'YADIER', 'YONI', 'YORDAN',
+    'ZACARIAS', 'ZEKE',
+    'AMADOR', 'CLEMENTE', 'CONTENTO', 'CRESCENCIO', 'FORTUNATO',
+    'GRACILIANO', 'INOCENCIO', 'JUSTO', 'LADISLAO', 'NEMESIO',
+    'PEREGRINO', 'REMIGIO', 'RENATO', 'SIXTO', 'VITO',
+    'SERGIO', 'SAULO',
+    'EDER', 'JEFERSON', 'WILLIAM', 'JHON', 'JHONY', 'JHOAN',
+    'DEIVID', 'DEIBY', 'BRAYAN', 'KEVIN', 'BRANDON',
+    'YEFERSON', 'YEISON', 'YOBAN', 'YONATAN',
+    'JUNIOR', 'MAIKEL', 'MICHAEL', 'STIVEN', 'JEFFERSON',
+    'ADRIEL', 'HANS', 'DERRICK', 'ELVIN', 'ISIDRO',
+    'CELSO', 'CORNELIO', 'JACOBO', 'FULGENCIO', 'YAGO',
+    'CELESTINO', 'CIRO', 'EDILBERTO', 'ELIGIO', 'HIGINIO',
+    'HONORIO', 'MANOLO', 'PEPE', 'TEODOSIO', 'VALERIO',
+    'ADELMO', 'NILO', 'EMIGDIO', 'CRISTHIAN',
+}
+
+NOMBRES_FEMENINOS = {
+    'ABIGAIL', 'ADELA', 'ADELAIDA', 'ADELINA', 'ADRIANA', 'AGUSTINA',
+    'AIDA', 'AINA', 'AINHOA', 'ALBA', 'ALEJANDRA', 'ALEXANDRA',
+    'ALFONSINA', 'ALICIA', 'ALINA', 'ALMA', 'ALONDRA', 'ALTAGRACIA',
+    'AMADA', 'AMALIA', 'AMANDA', 'AMBAR', 'AMELIA', 'AMPARO',
+    'ANA', 'ANABEL', 'ANALIA', 'ANASTASIA', 'ANDREA', 'ANGELA',
+    'ANGELES', 'ANGELICA', 'ANGELITA', 'ANITA', 'ANNA', 'ANTONIA', 'APOLONIA',
+    'ARACELI', 'ARACELY', 'ARANTZA', 'ARIANA', 'ARIANE', 'ARLENE',
+    'ARTEMISA', 'ASUNCION', 'AUGUSTA', 'AURA', 'AUXILIADORA',
+    'AVRIL', 'AZUCENA', 'AZUL',
+    'BALBINA', 'BARBARA', 'BASILISA', 'BEGOÑA', 'BELEN', 'BERNARDA',
+    'BERENICE', 'BERNARDINA', 'BETSABE', 'BIANCA', 'BLANCA', 'BRENDA',
+    'BRIANDA', 'BRIGIDA', 'BRIGITTE',
+    'CANDELARIA', 'CANDIDA', 'CARIDAD', 'CARLA', 'CARLOTA',
+    'CARMEN', 'CAROLINA', 'CASANDRA', 'CATALINA', 'CATERINA',
+    'CECILIA', 'CELESTE', 'CELIA', 'CELINA', 'CIRA', 'CLARA',
+    'CLARISA', 'CLAUDIA', 'CLOTILDE', 'COLUMBA', 'CONCEPCION',
+    'CONCORDIA', 'CONSUELO', 'CORAL', 'CORINA', 'CRISTINA', 'CRUZ',
+    'DALILA', 'DANIELA', 'DARLENE', 'DEBORA', 'DELFINA', 'DELIA',
+    'DENISSE', 'DESIREE', 'DIANA', 'DINA', 'DINORA', 'DOLORES',
+    'DOMINGA', 'DOMITILA', 'DONATA', 'DORA', 'DORIS', 'DORITA', 'DULCE',
+    'EDELMIRA', 'EDITH', 'EDUVIGES', 'ELENA', 'ELIANA', 'ELIGIA',
+    'ELISA', 'ELISABETH', 'ELISENDA', 'ELMA', 'ELOISA', 'ELSA',
+    'ELVIRA', 'EMELINA', 'EMILIA', 'EMILIANA', 'EMPERATRIZ',
+    'ENCARNACION', 'ERIKA', 'ERMELINDA', 'ERNESTINA', 'ESMERALDA',
+    'ESPERANZA', 'ESTEFANIA', 'ESTELA', 'ESTER', 'ESTRELLA',
+    'EUGENIA', 'EULALIA', 'EUSEBIA', 'EVA', 'EVANGELINA', 'EVELYN',
+    'EVITA',
+    'FABIOLA', 'FATIMA', 'FELICIA', 'FELICITAS', 'FELICIDAD',
+    'FELICITACION', 'FERNANDA', 'FIDELA', 'FILIPA', 'FILOMENA',
+    'FLOR', 'FLORA', 'FLORENCIA', 'FLORENTINA', 'FRANCISCA',
+    'GABRIELA', 'GEMA', 'GENOVEVA', 'GEORGINA', 'GERARDA',
+    'GERMANA', 'GERTRUDIS', 'GILDA', 'GIMENA', 'GINA', 'GLADYS',
+    'GLENDA', 'GLORIA', 'GRACIA', 'GRACIELA', 'GRISELDA',
+    'GUADALUPE', 'GUILLERMINA', 'GUMERSINDA',
+    'HAYDEE', 'HELENA', 'HERLINDA', 'HERMINIA', 'HILARIA',
+    'HORTENSIA',
+    'IBIS', 'IDA', 'ILIANA', 'INES', 'INFANTITA', 'INMACULADA',
+    'IRENE', 'IRIS', 'IRMA', 'ISABEL', 'ISIDRA', 'ISOLINA',
+    'ITZEL', 'IVETTE',
+    'JACINTA', 'JAQUELINE', 'JASMIN', 'JENNIFER', 'JERONIMA',
+    'JESSICA', 'JIMENA', 'JOAQUINA', 'JOSEFA', 'JOSEFINA',
+    'JUANA', 'JULIA', 'JULIANA', 'JULIETA',
+    'KAREN', 'KARINA', 'KATHERINE', 'KATIA', 'KIMBERLY',
+    'LAURA', 'LEANDRA', 'LEIRE', 'LENA', 'LEOCADIA', 'LEONARDA',
+    'LEONCIA', 'LEONOR', 'LETICIA', 'LIDIA', 'LIEN', 'LILIA',
+    'LILIANA', 'LINA', 'LISBETH', 'LIVIA', 'LORENA', 'LORENZA',
+    'LOURDES', 'LUCIA', 'LUCIANA', 'LUCILA', 'LUCINDA', 'LUDIVINA',
+    'LUISA', 'LUISANA', 'LUPITA', 'LUZ',
+    'MACARENA', 'MAGDALENA', 'MAGNOLIA', 'MANUELA', 'MARA',
+    'MARCELA', 'MARCELINA', 'MARGARITA', 'MARIA',
+    'MARIANA', 'MARICELA', 'MARIELA', 'MARILINA', 'MARILU',
+    'MARINA', 'MARIPAZ', 'MARISELA', 'MARISOL', 'MARTA', 'MARTINA',
+    'MATILDE', 'MAURA', 'MELANIA', 'MELBA', 'MELISA', 'MERCEDES',
+    'MICAELA', 'MIGUELA', 'MINERVA', 'MIRANDA',
+    'MIRIAM', 'MIRNA', 'MODESTA', 'MONICA', 'MONTSERRAT',
+    'NANCY', 'NARCISA', 'NATALIA', 'NATALY', 'NATIVIDAD',
+    'NAYELI', 'NELIDA', 'NEREIDA', 'NICOLE', 'NICOLASA',
+    'NIEVES', 'NILDA', 'NOELIA', 'NOEMI', 'NORMA',
+    'OBDULIA', 'OCTAVIA', 'ODALIS', 'ODALYS', 'OFELIA', 'OLGA', 'OLIMPIA',
+    'OLIVIA', 'ORFELINA', 'OTILIA',
+    'PABLA', 'PALOMA', 'PAOLA', 'PATRICIA', 'PAULA', 'PAULINA',
+    'PAZ', 'PEARLA', 'PENELOPE', 'PERLA', 'PETRA', 'PETRONILA',
+    'PILAR', 'PRISCILA', 'PRUDENCIA', 'PURIFICACION',
+    'RAFAELA', 'RAMONA', 'RAQUEL', 'REBECA', 'REFUGIO',
+    'REGINA', 'REINA', 'RENATA', 'RITA', 'ROBERTA', 'ROCIO',
+    'RODOLFA', 'ROSA', 'ROSALBA', 'ROSALIA', 'ROSALINDA', 'ROSANA',
+    'ROSARIO', 'ROSENDA', 'ROSITA', 'RUFINA', 'RUPERTA', 'RUTH',
+    'SABINA', 'SALOME', 'SAMANTHA', 'SANDRA', 'SARA', 'SARITA',
+    'SATURNINA', 'SELENA', 'SELENE', 'SERE', 'SERENA',
+    'SILVIA', 'SILVINA', 'SOCORRO', 'SONIA', 'SORAYA', 'SOFIA',
+    'SOLEDAD', 'SUSANA', 'SUSY',
+    'TANIA', 'TATIANA', 'TEODORA', 'TEOFILA', 'TERESA', 'TEODOSIA',
+    'TIMOTEA', 'TOMASA', 'TRINIDAD',
+    'ULALIA', 'URBANA', 'URSULA',
+    'VALENTINA', 'VALERIA', 'VANESA', 'VICENTA', 'VICTORIA',
+    'VIOLETA', 'VIRGINIA', 'VISITACION',
+    'WENDY', 'WILMA',
+    'XIOMARA', 'XIMENA', 'XISCA',
+    'YADIRA', 'YANET', 'YANIRA', 'YARA', 'YARITZA', 'YASMIN',
+    'YENIFER', 'YESENIA', 'YOLANDA', 'YOLIMA',
+    'ZORAIDA', 'ZULEMA', 'ZULMA',
+    'CHUS', 'FIORELLA', 'GIANELLA', 'LUZMILA',
+    'MAITE', 'NURIA', 'VERONICA', 'VIVIANA',
+    'BERNARDITA', 'CARMINA', 'DANIELA',
+    'ELIZABETH', 'ESTHER', 'MACARIA', 'MARITZA',
+    'MAXIMA', 'PAQUITA', 'PASTORA',
+    'PRESENTACION', 'PURA', 'REMEDIOS',
+    'ROSAURA', 'SEVERA', 'VIRTUDES', 'AFRICA',
+    'DANIA', 'ELVIA', 'ERLINDA', 'ETHEL', 'FANNY',
+    'GILMA', 'HILDA', 'INDIRA', 'IVONNE',
+    'KARLA', 'LOIDA', 'MARBELY', 'MARY',
+    'NINFA', 'NORA', 'OLIVA',
+    'ROSALVA', 'SULEMA', 'YULI', 'YULIANA',
+    'MARCIA', 'ZENAIDA', 'ELODIA',
+    'AINOA', 'AINOHA', 'CANDELA', 'CLOE',
+    'CONCHITA', 'MILAGROS', 'MILAGRO', 'ROXANA',
+    'LOLA', 'ODIS',
+    'AMARILIS', 'AURELIA', 'ELBA', 'CHITA',
+    'FLORA', 'GLORIA', 'ALBA', 'ALMA', 'MARTA', 'IRENE',
+    'LUCIA', 'ELENA', 'ANDREA', 'CARLA', 'ROSA', 'SONIA',
+    'LIDIA', 'MARINA', 'SILVIA', 'NORMA', 'INES', 'IRMA',
+    'MARIA', 'CELIA', 'ELISA', 'LAURA', 'OLGA',
+}
+
+
 class DataTransformer:
     def transform(self, df):
         logger.info('Iniciando transformación de datos')
@@ -45,6 +255,7 @@ class DataTransformer:
         df = self._imputar_nulos(df)
         df = self._validar_rangos_clinicos(df)
         df = self._normalizar_variables_categoricas(df)
+        df = self._corregir_sexo_por_nombre(df)
         df = self._calcular_imc(df)
         df = self._clasificar_imc(df)
         df = self._clasificar_riesgo(df)
@@ -122,8 +333,19 @@ class DataTransformer:
             'fumador': 'fumador', 'fuma': 'fumador', 'tabaquismo': 'fumador',
             'habito_tabaquico': 'fumador', 'hábito_tabáquico': 'fumador',
             'es_fumador': 'fumador', 'smoker': 'fumador', 'smoking': 'fumador',
+
+            'apellido': 'apellido', 'apellidos': 'apellido',
+            'surname': 'apellido', 'last_name': 'apellido',
+            'lastname': 'apellido', 'primer_apellido': 'apellido',
+            'segundo_apellido': 'apellido',
         }
         df = df.rename(columns=mapping)
+
+        if 'apellido' in df.columns and 'nombre' in df.columns:
+            df['nombre'] = df['nombre'].fillna('').astype(str).str.strip() + ' ' + df['apellido'].fillna('').astype(str).str.strip()
+            df['nombre'] = df['nombre'].str.strip()
+            df = df.drop(columns=['apellido'])
+
         for col in COLUMNAS_REQUERIDAS:
             if col not in df.columns:
                 raise TransformException(f'Columna requerida no encontrada: {col}')
@@ -186,6 +408,21 @@ class DataTransformer:
     def _normalizar_variables_categoricas(self, df):
         if 'diagnostico' in df.columns:
             df['diagnostico'] = df['diagnostico'].str.strip().str.upper()
+        return df
+
+    def _corregir_sexo_por_nombre(self, df):
+        if 'nombre' not in df.columns or 'sexo' not in df.columns:
+            return df
+
+        sexo_inferido = df['nombre'].fillna('').astype(str).apply(_inferir_sexo_por_nombre)
+        cambios_m = sexo_inferido.eq('M') & (df['sexo'] != 'M')
+        cambios_f = sexo_inferido.eq('F') & (df['sexo'] != 'F')
+
+        df.loc[cambios_m, 'sexo'] = 'M'
+        df.loc[cambios_f, 'sexo'] = 'F'
+
+        if cambios_m.any() or cambios_f.any():
+            logger.info(f'Sexo corregido por nombre completo: {cambios_m.sum()} a M, {cambios_f.sum()} a F')
         return df
 
     def _calcular_imc(self, df):

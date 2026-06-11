@@ -71,7 +71,10 @@ async function makePrediction() {
             body: data,
         });
 
-        if (!response.ok) throw new Error('Error al predecir');
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || 'Error al predecir');
+        }
         const result = await response.json();
 
         const alertClass = {
