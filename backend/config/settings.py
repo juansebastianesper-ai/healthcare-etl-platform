@@ -65,9 +65,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-USE_POSTGRES = os.getenv('USE_POSTGRES', 'False').lower() == 'true'
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-if USE_POSTGRES:
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
+elif os.getenv('USE_POSTGRES', 'False').lower() == 'true':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
