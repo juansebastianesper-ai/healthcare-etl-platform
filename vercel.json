@@ -1,5 +1,4 @@
 {
-  "rootDirectory": "backend",
   "builds": [
     {
       "src": "api/**/*.py",
