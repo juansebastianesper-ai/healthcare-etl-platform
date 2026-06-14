@@ -120,6 +120,7 @@ CORS_ALLOWED_ORIGINS = os.getenv(
     'http://localhost:8000,http://localhost:3000,http://127.0.0.1:8000'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

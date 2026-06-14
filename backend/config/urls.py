@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -20,6 +21,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('api/health/', lambda r: JsonResponse({'status': 'ok'}), name='health-check'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
     path('api/etl/', include('etl.urls')),
