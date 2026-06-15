@@ -10,6 +10,7 @@ async function loadETLHistory() {
 
         if (items.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No hay ejecuciones ETL</td></tr>';
+            updateETLStats(items);
             return;
         }
 
