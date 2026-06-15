@@ -148,6 +148,7 @@ async function deletePredictionsHistory() {
         const data = await response.json();
         showToast(data.message, 'success');
         loadPredictionsHistory();
+        loadModelInfo();
     } catch (error) {
         handleApiError(error);
     }
