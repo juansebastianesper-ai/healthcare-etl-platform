@@ -99,10 +99,13 @@ class ETLRunViewSet(viewsets.ModelViewSet):
             p_count, _ = Patient.objects.all().delete()
             r_count, _ = ETLRun.objects.all().delete()
             s_count, _ = ETLSource.objects.all().delete()
-            tables = ['etl_patient', 'etl_etlrun', 'etl_etlsource']
-            for table in tables:
-                with connection.cursor() as cursor:
-                    cursor.execute(f"DELETE FROM sqlite_sequence WHERE name='{table}'")
+            engine = connection.vendor
+            with connection.cursor() as cursor:
+                for table in ['etl_patient', 'etl_etlrun', 'etl_etlsource']:
+                    if engine == 'sqlite':
+                        cursor.execute(f"DELETE FROM sqlite_sequence WHERE name='{table}'")
+                    elif engine == 'postgresql':
+                        cursor.execute(f"ALTER SEQUENCE {table}_id_seq RESTART WITH 1")
         return Response({
             'message': f'Borrados: {p_count} pacientes, {r_count} ejecuciones, {s_count} fuentes',
         })

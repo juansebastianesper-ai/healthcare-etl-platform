@@ -92,6 +92,10 @@ class PredictionViewSet(viewsets.GenericViewSet):
     def delete_history(self, request):
         from django.db import connection
         count, _ = Prediction.objects.all().delete()
+        engine = connection.vendor
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM sqlite_sequence WHERE name='ml_prediction'")
+            if engine == 'sqlite':
+                cursor.execute("DELETE FROM sqlite_sequence WHERE name='ml_prediction'")
+            elif engine == 'postgresql':
+                cursor.execute("ALTER SEQUENCE ml_prediction_id_seq RESTART WITH 1")
         return Response({'message': f'Historial borrado: {count} predicciones eliminadas'})
