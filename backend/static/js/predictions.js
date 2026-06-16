@@ -55,15 +55,27 @@ async function loadPredictionsHistory() {
 }
 
 async function makePrediction() {
-    const data = {
-        edad: parseFloat(document.getElementById('predEdad').value),
-        imc: parseFloat(document.getElementById('predIMC').value),
-        glucosa: parseFloat(document.getElementById('predGlucosa').value),
-        colesterol: parseFloat(document.getElementById('predColesterol').value),
-        presion_sistolica: parseFloat(document.getElementById('predPresion').value),
-        frecuencia_cardiaca: parseFloat(document.getElementById('predFrecuencia').value),
-        fumador: document.getElementById('predFumador').value === 'true',
+    const form = document.getElementById('predictForm');
+    const fields = {
+        edad: { id: 'predEdad', name: 'Edad' },
+        imc: { id: 'predIMC', name: 'IMC' },
+        glucosa: { id: 'predGlucosa', name: 'Glucosa' },
+        colesterol: { id: 'predColesterol', name: 'Colesterol' },
+        presion_sistolica: { id: 'predPresion', name: 'Presión Sistólica' },
+        frecuencia_cardiaca: { id: 'predFrecuencia', name: 'Frecuencia Cardíaca' },
     };
+
+    const data = { fumador: document.getElementById('predFumador').value === 'true' };
+    for (const [key, field] of Object.entries(fields)) {
+        const el = document.getElementById(field.id);
+        const val = parseFloat(el.value);
+        if (isNaN(val)) {
+            showToast(`Ingrese un valor válido para ${field.name}`, 'warning');
+            el.focus();
+            return;
+        }
+        data[key] = val;
+    }
 
     try {
         const response = await apiRequest('/ml/predictions/predict/', {

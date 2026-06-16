@@ -2,7 +2,6 @@ import logging
 import numpy as np
 import joblib
 from pathlib import Path
-from django.conf import settings
 from .models import MLModel, Prediction
 from etl.models import Patient
 from core.exceptions import ModelNotTrainedException, MLException
@@ -11,7 +10,7 @@ logger = logging.getLogger('ml')
 
 
 class PredictorService:
-    def predict_individual(self, data, user=None):
+    def _load_model_and_encoder(self):
         model = MLModel.objects.filter(activo=True).first()
         if not model:
             raise ModelNotTrainedException()
@@ -21,6 +20,18 @@ class PredictorService:
             raise ModelNotTrainedException('Archivo del modelo no encontrado')
 
         clf = joblib.load(model_path)
+
+        le_path = Path(str(model_path).replace('random_forest_', 'label_encoder_'))
+        try:
+            le = joblib.load(le_path)
+            riesgo_labels = list(le.classes_)
+        except Exception:
+            riesgo_labels = ['BAJO', 'MEDIO', 'ALTO', 'CRITICO']
+
+        return clf, riesgo_labels, model
+
+    def predict_individual(self, data, user=None):
+        clf, riesgo_labels, model = self._load_model_and_encoder()
 
         features = np.array([[
             float(data.get('edad', 0)),
@@ -35,7 +46,6 @@ class PredictorService:
         prediction_encoded = clf.predict(features)[0]
         probabilities = clf.predict_proba(features)[0]
 
-        riesgo_labels = ['BAJO', 'MEDIO', 'ALTO', 'CRITICO']
         if prediction_encoded < len(riesgo_labels):
             riesgo_pred = riesgo_labels[prediction_encoded]
         else:

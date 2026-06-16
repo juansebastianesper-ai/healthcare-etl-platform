@@ -98,17 +98,23 @@ async function uploadETL() {
 
         if (response.ok) {
             const data = await response.json();
-            result.innerHTML = `
-                <div class="alert alert-success">
-                    <strong>ETL Completado!</strong><br>
-                    Registros: ${formatNumber(data.registros_limpios)}<br>
-                    Errores: ${formatNumber(data.registros_errores)}
-                </div>`;
+            if (data.estado === 'ERROR') {
+                result.innerHTML = `<div class="alert alert-danger"><strong>ETL Falló!</strong><br>${data.log_detalle || 'Error desconocido'}</div>`;
+                showToast('ETL falló', 'danger');
+            } else {
+                result.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>ETL Completado!</strong><br>
+                        Registros: ${formatNumber(data.registros_limpios)}<br>
+                        Errores: ${formatNumber(data.registros_errores)}
+                    </div>`;
+                showToast('ETL ejecutado exitosamente', 'success');
+            }
             loadETLHistory();
-            showToast('ETL ejecutado exitosamente', 'success');
         } else {
             const error = await response.json();
             result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            loadETLHistory();
         }
     } catch (error) {
         progress.classList.add('d-none');

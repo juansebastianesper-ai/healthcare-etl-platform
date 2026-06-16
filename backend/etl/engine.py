@@ -99,6 +99,7 @@ class ETLEngine:
             logs.append(f'ERROR: {str(e)}')
             etl_run.log_detalle = '\n'.join(logs)
             logger.error(f'ETL falló: {str(e)}')
+            raise
 
         finally:
             etl_run.fecha_fin = datetime.now()

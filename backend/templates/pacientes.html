@@ -112,6 +112,22 @@
 <script src="{% static 'js/pacientes.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const riesgo = urlParams.get('riesgo');
+    if (riesgo) {
+        const sel = document.getElementById('filterRiesgo');
+        if (sel) sel.value = riesgo;
+    }
+    const sexo = urlParams.get('sexo');
+    if (sexo) {
+        const sel = document.getElementById('filterSexo');
+        if (sel) sel.value = sexo;
+    }
+    const imc = urlParams.get('imc_clasificacion');
+    if (imc) {
+        const sel = document.getElementById('filterIMC');
+        if (sel) sel.value = imc;
+    }
     loadPacientes();
     document.getElementById('filterRiesgo').addEventListener('change', loadPacientes);
     document.getElementById('filterSexo').addEventListener('change', loadPacientes);

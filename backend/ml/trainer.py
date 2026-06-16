@@ -31,7 +31,7 @@ class ModelTrainer:
 
         logger.info(f'Iniciando entrenamiento con {pacientes.count()} pacientes')
 
-        X, y = self._prepare_data(pacientes)
+        X, y, le = self._prepare_data(pacientes)
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42, stratify=y
         )
@@ -53,7 +53,7 @@ class ModelTrainer:
         metrics = self._calculate_metrics(y_test, y_pred)
 
         model_version = self._get_next_version()
-        model_record = self._save_model(model, metrics, model_version, user)
+        model_record = self._save_model(model, metrics, model_version, user, le)
 
         logger.info(f'Modelo v{model_version} guardado. Accuracy: {metrics["accuracy"]:.4f}')
         return model_record, metrics
@@ -61,7 +61,6 @@ class ModelTrainer:
     def _prepare_data(self, pacientes):
         X = []
         y = []
-        label_encoders = {}
 
         for p in pacientes:
             X.append([
@@ -77,9 +76,8 @@ class ModelTrainer:
 
         le = LabelEncoder()
         y_encoded = le.fit_transform(y)
-        label_encoders['riesgo'] = le
 
-        return np.array(X), y_encoded
+        return np.array(X), y_encoded, le
 
     def _calculate_metrics(self, y_true, y_pred):
         return {
@@ -99,14 +97,14 @@ class ModelTrainer:
                 return '1.1'
         return '1.0'
 
-    def _save_model(self, model, metrics, version, user):
+    def _save_model(self, model, metrics, version, user, label_encoder=None):
         model_dir = Path(settings.MEDIA_ROOT) / 'models'
         model_dir.mkdir(parents=True, exist_ok=True)
         model_path = model_dir / f'random_forest_v{version}.joblib'
         joblib.dump(model, model_path)
 
         le_path = model_dir / f'label_encoder_v{version}.joblib'
-        joblib.dump(LabelEncoder(), le_path)
+        joblib.dump(label_encoder or LabelEncoder(), le_path)
 
         model_record = MLModel.objects.create(
             version=version,

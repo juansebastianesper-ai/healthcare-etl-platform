@@ -7,6 +7,12 @@ async function loadPacientes(page) {
     currentPage = page;
 
     const params = new URLSearchParams({ page, ordering: '-id' });
+    const urlParams = new URLSearchParams(window.location.search);
+    for (const key of urlParams.keys()) {
+        if (!params.has(key) && ['riesgo', 'sexo', 'fumador', 'hipertenso', 'diabetico', 'imc_clasificacion', 'imc_min', 'imc_max'].includes(key)) {
+            params.set(key, urlParams.get(key));
+        }
+    }
     const search = document.getElementById('searchPaciente')?.value?.trim();
     if (search) params.set('search', search);
     const riesgo = document.getElementById('filterRiesgo')?.value;
