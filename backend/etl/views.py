@@ -10,7 +10,7 @@ from .models import Patient, ETLRun, ETLSource
 from .filters import PatientFilter
 from .serializers import (
     PatientSerializer, PatientListSerializer, ETLRunSerializer,
-    ETLRunHistorySerializer, ETLSourceSerializer
+    ETLRunHistorySerializer, ETLRunUploadSerializer, ETLSourceSerializer
 )
 from .engine import ETLEngine
 from core.exceptions import ETLException
@@ -85,7 +85,7 @@ class ETLRunViewSet(viewsets.ModelViewSet):
                 user=request.user,
             )
 
-            serializer = self.get_serializer(etl_run)
+            serializer = ETLRunUploadSerializer(etl_run)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as e:

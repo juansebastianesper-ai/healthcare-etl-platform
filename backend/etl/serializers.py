@@ -40,6 +40,12 @@ class ETLRunSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
 
 
+class ETLRunUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ETLRun
+        fields = ['id', 'archivo', 'registros_procesados', 'registros_limpios', 'registros_errores', 'estado', 'fecha_inicio', 'fecha_fin', 'created_at']
+
+
 class ETLRunHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ETLRun
