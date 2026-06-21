@@ -114,10 +114,14 @@ async function predictPaciente(id) {
                 </div>`;
             modal.show();
         } else {
-            const err = await response.json().catch(() => ({ message: 'Error desconocido' }));
+            const err = await response.json().catch(() => ({ message: 'Error desconocido', code: '' }));
+            const msg = err.code === 'model_not_trained'
+                ? 'No hay un modelo de Machine Learning entrenado. Andá a la sección <strong>ML</strong> y hacé clic en <strong>"Entrenar Modelo"</strong> primero.'
+                : err.message;
             document.getElementById('predictResult').innerHTML = `
-                <div class="alert alert-danger">
-                    <strong>Error:</strong> ${err.message}
+                <div class="alert alert-warning">
+                    <strong>Predicción no disponible</strong><br>
+                    ${msg}
                 </div>`;
             modal.show();
         }
