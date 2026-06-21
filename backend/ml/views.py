@@ -46,6 +46,11 @@ class PredictionViewSet(viewsets.GenericViewSet):
     serializer_class = PredictionSerializer
     permission_classes = [IsAnalista]
 
+    def get_permissions(self):
+        if self.action in ['predict', 'predict_patient']:
+            return [IsAuthenticated()]
+        return super().get_permissions()
+
     def list(self, request):
         predictions = self.get_queryset()
         page = self.paginate_queryset(predictions)

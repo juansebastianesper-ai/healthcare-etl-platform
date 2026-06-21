@@ -5,7 +5,7 @@ from functools import wraps
 
 ALLOWED_ROLES = {
     'dashboard': ['ADMIN', 'ANALISTA', 'MEDICO'],
-    'pacientes': ['ADMIN', 'ANALISTA'],
+    'pacientes': ['ADMIN', 'ANALISTA', 'MEDICO'],
     'etl-page': ['ADMIN', 'ANALISTA'],
     'analytics': ['ADMIN', 'ANALISTA', 'MEDICO'],
     'predictions': ['ADMIN', 'ANALISTA'],

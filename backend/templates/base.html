@@ -27,12 +27,14 @@
                             <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
                     </li>
-                    {% if user.role == 'ADMIN' or user.role == 'ANALISTA' %}
+                    {% if user.role == 'ADMIN' or user.role == 'ANALISTA' or user.role == 'MEDICO' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'pacientes' %}">
                             <i class="bi bi-people"></i> Pacientes
                         </a>
                     </li>
+                    {% endif %}
+                    {% if user.role == 'ADMIN' or user.role == 'ANALISTA' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'etl-page' %}">
                             <i class="bi bi-arrow-repeat"></i> ETL
