@@ -92,6 +92,8 @@ async function predictPaciente(id) {
             body: { paciente_id: id },
         });
 
+        const modal = new bootstrap.Modal(document.getElementById('predictModal'));
+
         if (response.ok) {
             const data = await response.json();
             const alertClass = {
@@ -110,7 +112,14 @@ async function predictPaciente(id) {
                         `<small>${k}: ${(v * 100).toFixed(1)}%</small><br>`
                     ).join('')}
                 </div>`;
-            new bootstrap.Modal(document.getElementById('predictModal')).show();
+            modal.show();
+        } else {
+            const err = await response.json().catch(() => ({ message: 'Error desconocido' }));
+            document.getElementById('predictResult').innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> ${err.message}
+                </div>`;
+            modal.show();
         }
     } catch (error) {
         handleApiError(error);
