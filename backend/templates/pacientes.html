@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}Pacientes{% endblock %}
+{% block title %}
+{% with riesgo=request.GET.riesgo hipertenso=request.GET.hipertenso diabetico=request.GET.diabetico fumador=request.GET.fumador %}
+{% if riesgo == 'CRITICO' %}Pacientes Críticos
+{% elif hipertenso %}Pacientes Hipertensos
+{% elif diabetico %}Pacientes Diabéticos
+{% elif fumador %}Pacientes Fumadores
+{% else %}Pacientes
+{% endif %}
+{% endwith %}
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-people"></i> Pacientes</h2>
+        <h2><i class="bi bi-people"></i>
+{% with riesgo=request.GET.riesgo hipertenso=request.GET.hipertenso diabetico=request.GET.diabetico fumador=request.GET.fumador %}
+{% if riesgo == 'CRITICO' %}Pacientes Críticos
+{% elif hipertenso %}Pacientes Hipertensos
+{% elif diabetico %}Pacientes Diabéticos
+{% elif fumador %}Pacientes Fumadores
+{% else %}Pacientes
+{% endif %}
+{% endwith %}
+        </h2>
         <div>
             <button class="btn btn-primary" onclick="exportPacientes()">
                 <i class="bi bi-download"></i> Exportar
