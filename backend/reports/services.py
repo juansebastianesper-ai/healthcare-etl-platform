@@ -139,7 +139,7 @@ class ReportService:
                 'IMC', 'Clasif. IMC', 'Presión Sistólica', 'Presión Diastólica',
                 'Frecuencia Cardíaca', 'Glucosa (mg/dL)', 'Colesterol (mg/dL)',
                 'Saturación O₂ (%)', 'Temperatura (ºC)', 'Antecedentes Familiares',
-                'Fumador', 'Consumidor Alcohol', 'Actividad Física',
+                'Fumador', 'Consumidor Alcohol',
                 'Diagnóstico', 'Riesgo', 'Fecha Registro',
             ])
             for p in Patient.objects.all():
@@ -153,7 +153,6 @@ class ReportService:
                     p.antecedentes_familiares,
                     'Sí' if p.fumador else 'No',
                     'Sí' if p.consumidor_alcohol else 'No',
-                    p.get_actividad_fisica_display() if p.actividad_fisica else '',
                     p.diagnostico, p.get_riesgo_display(),
                     p.fecha_registro.strftime('%Y-%m-%d'),
                 ])
@@ -180,7 +179,7 @@ class ReportService:
                 'IMC', 'Clasif. IMC', 'Presión Sistólica', 'Presión Diastólica',
                 'Frecuencia Cardíaca', 'Glucosa (mg/dL)', 'Colesterol (mg/dL)',
                 'Saturación O₂ (%)', 'Temperatura (ºC)', 'Antecedentes Familiares',
-                'Fumador', 'Consumidor Alcohol', 'Actividad Física',
+                'Fumador', 'Consumidor Alcohol',
                 'Diagnóstico', 'Riesgo', 'Fecha Registro',
             ]
             ws.append(headers)
@@ -195,7 +194,6 @@ class ReportService:
                     p.antecedentes_familiares,
                     'Sí' if p.fumador else 'No',
                     'Sí' if p.consumidor_alcohol else 'No',
-                    p.get_actividad_fisica_display() if p.actividad_fisica else '',
                     p.diagnostico, p.get_riesgo_display(),
                     p.fecha_registro.strftime('%Y-%m-%d'),
                 ])
