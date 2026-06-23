@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -20,7 +20,10 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
+favicon_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#0d6efd"/><text x="16" y="23" text-anchor="middle" font-size="20" font-weight="bold" fill="white" font-family="Arial">H</text></svg>'
+
 urlpatterns = [
+    path('favicon.ico', lambda r: HttpResponse(favicon_svg, content_type='image/svg+xml')),
     path('api/health/', lambda r: JsonResponse({'status': 'ok'}), name='health-check'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
