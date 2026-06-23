@@ -1,26 +1,43 @@
 import logging
 import pandas as pd
 from django.db import transaction
+from django.db.models import Q
 from .models import Patient
 from core.exceptions import LoadException
 
 logger = logging.getLogger('etl')
 
+CAMPOS_ACTUALIZABLES = [
+    'peso', 'altura', 'imc', 'imc_clasificacion',
+    'presion_sistolica', 'presion_diastolica',
+    'glucosa', 'colesterol', 'frecuencia_cardiaca',
+    'saturacion_oxigeno', 'fumador', 'diagnostico', 'riesgo',
+]
+
 
 class DataLoader:
     def load(self, df, etl_run=None):
         logger.info(f'Cargando {len(df)} registros a la base de datos')
-        cargados = 0
+        creados = 0
+        actualizados = 0
         errores = 0
 
         try:
-            pacientes = []
+            existentes = self._get_existentes(df)
+            to_create = []
+            to_update = []
+
             for _, row in df.iterrows():
                 try:
-                    pacientes.append(Patient(
-                        nombre=row.get('nombre', ''),
-                        edad=int(row['edad']) if pd.notna(row.get('edad')) else 0,
-                        sexo=row.get('sexo', 'O'),
+                    nombre = str(row.get('nombre', '')).strip()
+                    edad = int(row['edad']) if pd.notna(row.get('edad')) else 0
+                    sexo = str(row.get('sexo', 'O')).strip().upper()
+                    clave = (nombre, edad, sexo)
+
+                    paciente = Patient(
+                        nombre=nombre,
+                        edad=edad,
+                        sexo=sexo,
                         peso=float(row['peso']) if pd.notna(row.get('peso')) else 0,
                         altura=float(row['altura']) if pd.notna(row.get('altura')) else 0,
                         imc=float(row['imc']) if pd.notna(row.get('imc')) else None,
@@ -34,30 +51,77 @@ class DataLoader:
                         fumador=bool(row['fumador']) if pd.notna(row.get('fumador')) else False,
                         diagnostico=row.get('diagnostico', ''),
                         riesgo=row.get('riesgo', 'BAJO'),
-                    ))
+                    )
+
+                    if clave in existentes:
+                        paciente.id = existentes[clave]
+                        to_update.append(paciente)
+                    else:
+                        to_create.append(paciente)
+
                 except Exception as e:
                     errores += 1
                     logger.error(f'Error preparando registro: {str(e)}')
 
-            if pacientes:
-                with transaction.atomic():
-                    for i in range(0, len(pacientes), 500):
-                        batch = pacientes[i:i + 500]
-                        try:
-                            with transaction.atomic():
-                                Patient.objects.bulk_create(batch)
-                            cargados += len(batch)
-                        except Exception as e:
-                            errores += len(batch)
-                            logger.error(f'Error insertando lote {i // 500}: {str(e)}')
+            if to_create:
+                creados = self._bulk_create(to_create)
+
+            if to_update:
+                actualizados = self._bulk_update(to_update)
 
         except Exception as e:
             raise LoadException(f'Error en carga masiva: {str(e)}')
 
+        total_ok = creados + actualizados
         if etl_run:
-            etl_run.registros_limpios = cargados
+            etl_run.registros_limpios = total_ok
             etl_run.registros_errores = errores
             etl_run.save()
 
-        logger.info(f'Carga completada: {cargados} cargados, {errores} errores')
-        return cargados, errores
+        logger.info(f'Carga completada: {creados} creados, {actualizados} actualizados, {errores} errores')
+        return total_ok, errores
+
+    def _get_existentes(self, df):
+        combinaciones = set()
+        for _, row in df.iterrows():
+            nombre = str(row.get('nombre', '')).strip()
+            edad = int(row['edad']) if pd.notna(row.get('edad')) else 0
+            sexo = str(row.get('sexo', 'O')).strip().upper()
+            if nombre:
+                combinaciones.add((nombre, edad, sexo))
+
+        if not combinaciones:
+            return {}
+
+        query = Q()
+        for nombre, edad, sexo in combinaciones:
+            query |= Q(nombre=nombre, edad=edad, sexo=sexo)
+
+        existentes = Patient.objects.filter(query).only('id', 'nombre', 'edad', 'sexo')
+        return {(p.nombre, p.edad, p.sexo): p.id for p in existentes}
+
+    def _bulk_create(self, pacientes):
+        total = 0
+        with transaction.atomic():
+            for i in range(0, len(pacientes), 500):
+                batch = pacientes[i:i + 500]
+                try:
+                    with transaction.atomic():
+                        Patient.objects.bulk_create(batch)
+                    total += len(batch)
+                except Exception as e:
+                    logger.error(f'Error insertando lote {i // 500}: {str(e)}')
+        return total
+
+    def _bulk_update(self, pacientes):
+        total = 0
+        with transaction.atomic():
+            for i in range(0, len(pacientes), 500):
+                batch = pacientes[i:i + 500]
+                try:
+                    with transaction.atomic():
+                        Patient.objects.bulk_update(batch, CAMPOS_ACTUALIZABLES)
+                    total += len(batch)
+                except Exception as e:
+                    logger.error(f'Error actualizando lote {i // 500}: {str(e)}')
+        return total
