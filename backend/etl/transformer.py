@@ -431,6 +431,15 @@ class DataTransformer:
             'antecedentes_familiares_paciente': 'antecedentes_familiares',
             'family_history': 'antecedentes_familiares',
 
+            'diagnostico': 'diagnostico',
+            'diagnóstico': 'diagnostico',
+            'diagnosis': 'diagnostico',
+            'patología': 'diagnostico',
+            'patologia': 'diagnostico',
+            'enfermedad': 'diagnostico',
+            'condición': 'diagnostico',
+            'condicion': 'diagnostico',
+
             'fecha_consulta': 'fecha_consulta',
             'fecha_de_consulta': 'fecha_consulta', 'fecha_atencion': 'fecha_consulta',
             'fecha_atención': 'fecha_consulta', 'fecha_visita': 'fecha_consulta',
