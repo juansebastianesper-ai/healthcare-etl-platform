@@ -49,7 +49,7 @@ class Patient(models.Model):
             ('ACTIVO', 'Activo'),
             ('INTENSO', 'Intenso'),
         ],
-        null=True, blank=True,
+        default='SEDENTARIO', blank=True,
         verbose_name='Actividad Física',
     )
     diagnostico = models.TextField(blank=True, null=True, verbose_name='Diagnóstico')
