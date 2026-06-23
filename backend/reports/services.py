@@ -134,14 +134,29 @@ class ReportService:
         writer = csv.writer(response)
 
         if report_type == 'pacientes':
-            writer.writerow(['ID', 'Nombre', 'Edad', 'Sexo', 'IMC', 'Clasif. IMC',
-                           'Glucosa', 'Colesterol', 'Riesgo', 'Fumador', 'Fecha'])
+            writer.writerow([
+                'ID', 'Nombre', 'Edad', 'Sexo', 'Peso (kg)', 'Altura (m)',
+                'IMC', 'Clasif. IMC', 'Presión Sistólica', 'Presión Diastólica',
+                'Frecuencia Cardíaca', 'Glucosa (mg/dL)', 'Colesterol (mg/dL)',
+                'Saturación O₂ (%)', 'Temperatura (ºC)', 'Antecedentes Familiares',
+                'Fumador', 'Consumidor Alcohol', 'Actividad Física',
+                'Diagnóstico', 'Riesgo', 'Fecha Consulta', 'Fecha Registro',
+            ])
             for p in Patient.objects.all():
                 writer.writerow([
-                    p.id, p.nombre, p.edad, p.get_sexo_display(), p.imc,
-                    p.get_imc_clasificacion_display(), p.glucosa, p.colesterol,
-                    p.get_riesgo_display(), 'Sí' if p.fumador else 'No',
-                    p.fecha_registro.strftime('%Y-%m-%d')
+                    p.id, p.nombre, p.edad, p.get_sexo_display(),
+                    p.peso, p.altura, p.imc,
+                    p.get_imc_clasificacion_display(),
+                    p.presion_sistolica, p.presion_diastolica,
+                    p.frecuencia_cardiaca, p.glucosa, p.colesterol,
+                    p.saturacion_oxigeno, p.temperatura,
+                    p.antecedentes_familiares,
+                    'Sí' if p.fumador else 'No',
+                    'Sí' if p.consumidor_alcohol else 'No',
+                    p.get_actividad_fisica_display() if p.actividad_fisica else '',
+                    p.diagnostico, p.get_riesgo_display(),
+                    p.fecha_consulta.strftime('%Y-%m-%d') if p.fecha_consulta else '',
+                    p.fecha_registro.strftime('%Y-%m-%d'),
                 ])
         elif report_type == 'predicciones':
             writer.writerow(['ID', 'Paciente', 'Predicción', 'Probabilidad', 'Fecha'])
@@ -161,15 +176,30 @@ class ReportService:
         ws.title = report_type.capitalize()
 
         if report_type == 'pacientes':
-            headers = ['ID', 'Nombre', 'Edad', 'Sexo', 'IMC', 'Clasif. IMC',
-                      'Glucosa', 'Colesterol', 'Riesgo', 'Fumador', 'Fecha']
+            headers = [
+                'ID', 'Nombre', 'Edad', 'Sexo', 'Peso (kg)', 'Altura (m)',
+                'IMC', 'Clasif. IMC', 'Presión Sistólica', 'Presión Diastólica',
+                'Frecuencia Cardíaca', 'Glucosa (mg/dL)', 'Colesterol (mg/dL)',
+                'Saturación O₂ (%)', 'Temperatura (ºC)', 'Antecedentes Familiares',
+                'Fumador', 'Consumidor Alcohol', 'Actividad Física',
+                'Diagnóstico', 'Riesgo', 'Fecha Consulta', 'Fecha Registro',
+            ]
             ws.append(headers)
             for p in Patient.objects.all():
                 ws.append([
-                    p.id, p.nombre, p.edad, p.get_sexo_display(), p.imc,
-                    p.get_imc_clasificacion_display(), p.glucosa, p.colesterol,
-                    p.get_riesgo_display(), 'Sí' if p.fumador else 'No',
-                    p.fecha_registro.strftime('%Y-%m-%d')
+                    p.id, p.nombre, p.edad, p.get_sexo_display(),
+                    p.peso, p.altura, p.imc,
+                    p.get_imc_clasificacion_display(),
+                    p.presion_sistolica, p.presion_diastolica,
+                    p.frecuencia_cardiaca, p.glucosa, p.colesterol,
+                    p.saturacion_oxigeno, p.temperatura,
+                    p.antecedentes_familiares,
+                    'Sí' if p.fumador else 'No',
+                    'Sí' if p.consumidor_alcohol else 'No',
+                    p.get_actividad_fisica_display() if p.actividad_fisica else '',
+                    p.diagnostico, p.get_riesgo_display(),
+                    p.fecha_consulta.strftime('%Y-%m-%d') if p.fecha_consulta else '',
+                    p.fecha_registro.strftime('%Y-%m-%d'),
                 ])
         elif report_type == 'etl':
             headers = ['ID', 'Archivo', 'Estado', 'Procesados', 'Limpios', 'Errores', 'Fecha']

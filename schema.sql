@@ -52,7 +52,15 @@ CREATE TABLE IF NOT EXISTS etl_patient (
     frecuencia_cardiaca     INTEGER NOT NULL CHECK (frecuencia_cardiaca >= 20 AND frecuencia_cardiaca <= 300),
     saturacion_oxigeno      DOUBLE PRECISION NOT NULL CHECK (saturacion_oxigeno >= 0 AND saturacion_oxigeno <= 100),
     fumador                 BOOLEAN NOT NULL DEFAULT FALSE,
+    consumidor_alcohol      BOOLEAN NOT NULL DEFAULT FALSE,
+    actividad_fisica        VARCHAR(20) NULL
+                            CHECK (actividad_fisica IN (
+                                'SEDENTARIO', 'MODERADO', 'ACTIVO', 'INTENSO'
+                            )),
     diagnostico             TEXT NULL,
+    temperatura             DOUBLE PRECISION NULL,
+    antecedentes_familiares TEXT NULL,
+    fecha_consulta          DATE NULL,
     riesgo                  VARCHAR(10) NULL
                             CHECK (riesgo IN ('BAJO', 'MEDIO', 'ALTO', 'CRITICO')),
     fecha_registro          TIMESTAMP NOT NULL DEFAULT NOW(),

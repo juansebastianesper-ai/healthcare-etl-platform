@@ -16,7 +16,7 @@ COLUMNAS_REQUERIDAS = [
 COLUMNAS_NUMERICAS = [
     'edad', 'peso', 'altura', 'presion_sistolica',
     'presion_diastolica', 'glucosa', 'colesterol',
-    'frecuencia_cardiaca', 'saturacion_oxigeno'
+    'frecuencia_cardiaca', 'saturacion_oxigeno', 'temperatura'
 ]
 
 RANGOS_CLINICOS = {
@@ -29,6 +29,7 @@ RANGOS_CLINICOS = {
     'edad': (0, 120),
     'peso': (1, 300),
     'altura': (0.3, 2.5),
+    'temperatura': (32, 42),
 }
 
 
@@ -412,6 +413,29 @@ class DataTransformer:
             'habito_tabaquico': 'fumador', 'hábito_tabáquico': 'fumador',
             'es_fumador': 'fumador', 'smoker': 'fumador', 'smoking': 'fumador',
 
+            'consumidor_alcohol': 'consumidor_alcohol',
+            'consumo_alcohol': 'consumidor_alcohol', 'alcohol': 'consumidor_alcohol',
+            'bebedor': 'consumidor_alcohol', 'alcoholico': 'consumidor_alcohol',
+            'alcoholic': 'consumidor_alcohol', 'alcohol_consumption': 'consumidor_alcohol',
+
+            'actividad_fisica': 'actividad_fisica',
+            'actividad_física': 'actividad_fisica', 'ejercicio': 'actividad_fisica',
+            'nivel_actividad': 'actividad_fisica', 'physical_activity': 'actividad_fisica',
+
+            'temperatura': 'temperatura',
+            'temperatura_(ºC)': 'temperatura', 'temp': 'temperatura',
+            'temperature': 'temperatura', 'temperatura_corporal': 'temperatura',
+
+            'antecedentes_familiares': 'antecedentes_familiares',
+            'antecedentes': 'antecedentes_familiares',
+            'antecedentes_familiares_paciente': 'antecedentes_familiares',
+            'family_history': 'antecedentes_familiares',
+
+            'fecha_consulta': 'fecha_consulta',
+            'fecha_de_consulta': 'fecha_consulta', 'fecha_atencion': 'fecha_consulta',
+            'fecha_atención': 'fecha_consulta', 'fecha_visita': 'fecha_consulta',
+            'consultation_date': 'fecha_consulta', 'visit_date': 'fecha_consulta',
+
             'apellido': 'apellido', 'apellidos': 'apellido',
             'surname': 'apellido', 'last_name': 'apellido',
             'lastname': 'apellido', 'primer_apellido': 'apellido',
@@ -441,12 +465,18 @@ class DataTransformer:
         for col in COLUMNAS_NUMERICAS:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
-        df['fumador'] = df['fumador'].map({
-            'SI': True, 'si': True, 'Si': True, 'SÍ': True, 'sí': True,
-            'YES': True, 'yes': True, 'Yes': True, 'Y': True, '1': True, 1: True, 'true': True, True: True,
-            'NO': False, 'no': False, 'No': False, 'N': False, '0': False, 0: False, 'false': False, False: False,
-        })
-        df['fumador'] = df['fumador'].fillna(False).astype(bool)
+        for col, bool_map in [('fumador', True), ('consumidor_alcohol', True)]:
+            if col in df.columns:
+                df[col] = df[col].map({
+                    'SI': True, 'si': True, 'Si': True, 'SÍ': True, 'sí': True,
+                    'YES': True, 'yes': True, 'Yes': True, 'Y': True, '1': True, 1: True, 'true': True, True: True,
+                    'NO': False, 'no': False, 'No': False, 'N': False, '0': False, 0: False, 'false': False, False: False,
+                })
+                df[col] = df[col].fillna(False).astype(bool)
+
+        if 'fecha_consulta' in df.columns:
+            df['fecha_consulta'] = pd.to_datetime(df['fecha_consulta'], errors='coerce')
+
         return df
 
     def _limpiar_errores_ortograficos(self, df):
@@ -486,6 +516,20 @@ class DataTransformer:
     def _normalizar_variables_categoricas(self, df):
         if 'diagnostico' in df.columns:
             df['diagnostico'] = df['diagnostico'].str.strip().str.upper()
+
+        if 'actividad_fisica' in df.columns:
+            df['actividad_fisica'] = df['actividad_fisica'].str.strip().str.upper()
+            df['actividad_fisica'] = df['actividad_fisica'].replace({
+                'SEDENTARIO': 'SEDENTARIO', 'SEDENTARIA': 'SEDENTARIO',
+                'NO_REALIZA': 'SEDENTARIO', 'NINGUNA': 'SEDENTARIO', 'INACTIVO': 'SEDENTARIO',
+                'MODERADO': 'MODERADO', 'MODERADA': 'MODERADO',
+                'ACTIVO': 'ACTIVO', 'ACTIVA': 'ACTIVO', 'REGULAR': 'ACTIVO',
+                'INTENSO': 'INTENSO', 'INTENSA': 'INTENSO', 'INTENSA': 'INTENSO',
+                'ALTO': 'INTENSO', 'MUY_ACTIVO': 'INTENSO', 'MUY_ACTIVA': 'INTENSO',
+            })
+            valores_validos = {'SEDENTARIO', 'MODERADO', 'ACTIVO', 'INTENSO'}
+            df.loc[~df['actividad_fisica'].isin(valores_validos), 'actividad_fisica'] = None
+
         return df
 
     def _corregir_sexo_por_nombre(self, df):

@@ -40,7 +40,22 @@ class Patient(models.Model):
     frecuencia_cardiaca = models.IntegerField(validators=[MinValueValidator(20), MaxValueValidator(300)], verbose_name='Frecuencia Cardíaca')
     saturacion_oxigeno = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name='Saturación Oxígeno (%)')
     fumador = models.BooleanField(default=False, verbose_name='Fumador')
+    consumidor_alcohol = models.BooleanField(default=False, verbose_name='Consumidor de Alcohol')
+    actividad_fisica = models.CharField(
+        max_length=20,
+        choices=[
+            ('SEDENTARIO', 'Sedentario'),
+            ('MODERADO', 'Moderado'),
+            ('ACTIVO', 'Activo'),
+            ('INTENSO', 'Intenso'),
+        ],
+        null=True, blank=True,
+        verbose_name='Actividad Física',
+    )
     diagnostico = models.TextField(blank=True, null=True, verbose_name='Diagnóstico')
+    temperatura = models.FloatField(null=True, blank=True, verbose_name='Temperatura (ºC)')
+    antecedentes_familiares = models.TextField(blank=True, null=True, verbose_name='Antecedentes Familiares')
+    fecha_consulta = models.DateField(null=True, blank=True, verbose_name='Fecha de Consulta')
     riesgo = models.CharField(
         max_length=10, choices=Riesgo.choices,
         null=True, blank=True, verbose_name='Nivel de Riesgo'

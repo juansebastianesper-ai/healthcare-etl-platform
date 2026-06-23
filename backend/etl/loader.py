@@ -11,7 +11,9 @@ CAMPOS_ACTUALIZABLES = [
     'peso', 'altura', 'imc', 'imc_clasificacion',
     'presion_sistolica', 'presion_diastolica',
     'glucosa', 'colesterol', 'frecuencia_cardiaca',
-    'saturacion_oxigeno', 'fumador', 'diagnostico', 'riesgo',
+    'saturacion_oxigeno', 'fumador', 'consumidor_alcohol',
+    'actividad_fisica', 'diagnostico', 'temperatura',
+    'antecedentes_familiares', 'fecha_consulta', 'riesgo',
 ]
 
 
@@ -49,7 +51,12 @@ class DataLoader:
                         frecuencia_cardiaca=int(row['frecuencia_cardiaca']) if pd.notna(row.get('frecuencia_cardiaca')) else 0,
                         saturacion_oxigeno=float(row['saturacion_oxigeno']) if pd.notna(row.get('saturacion_oxigeno')) else 0,
                         fumador=bool(row['fumador']) if pd.notna(row.get('fumador')) else False,
+                        consumidor_alcohol=bool(row['consumidor_alcohol']) if pd.notna(row.get('consumidor_alcohol')) else False,
+                        actividad_fisica=str(row['actividad_fisica']) if pd.notna(row.get('actividad_fisica')) else None,
                         diagnostico=row.get('diagnostico', ''),
+                        temperatura=float(row['temperatura']) if pd.notna(row.get('temperatura')) else None,
+                        antecedentes_familiares=row.get('antecedentes_familiares', ''),
+                        fecha_consulta=row['fecha_consulta'].date() if pd.notna(row.get('fecha_consulta')) and hasattr(row['fecha_consulta'], 'date') else None,
                         riesgo=row.get('riesgo', 'BAJO'),
                     )
 
