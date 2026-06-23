@@ -419,7 +419,9 @@ class DataTransformer:
             'alcoholic': 'consumidor_alcohol', 'alcohol_consumption': 'consumidor_alcohol',
 
             'actividad_fisica': 'actividad_fisica',
-            'actividad_física': 'actividad_fisica', 'ejercicio': 'actividad_fisica',
+            'actividad_física': 'actividad_fisica',
+            'actividad_fisíca': 'actividad_fisica',
+            'ejercicio': 'actividad_fisica',
             'nivel_actividad': 'actividad_fisica', 'physical_activity': 'actividad_fisica',
 
             'temperatura': 'temperatura',
@@ -433,6 +435,8 @@ class DataTransformer:
 
             'diagnostico': 'diagnostico',
             'diagnóstico': 'diagnostico',
+            'diagnóstico_preliminar': 'diagnostico',
+            'diagnostico_preliminar': 'diagnostico',
             'diagnosis': 'diagnostico',
             'patología': 'diagnostico',
             'patologia': 'diagnostico',
