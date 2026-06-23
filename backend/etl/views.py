@@ -1,5 +1,7 @@
 import logging
+import os
 import csv
+import tempfile
 import pandas as pd
 from io import StringIO
 from rest_framework import status, viewsets, generics, parsers
@@ -73,7 +75,20 @@ class ETLRunViewSet(viewsets.ModelViewSet):
             if archivo.name.endswith('.csv'):
                 df = _read_csv(archivo)
             elif archivo.name.endswith(('.xlsx', '.xls')):
-                df = pd.read_excel(archivo, engine='openpyxl')
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+                        for chunk in archivo.chunks():
+                            tmp.write(chunk)
+                        tmp_path = tmp.name
+                    df = pd.read_excel(tmp_path, engine='openpyxl')
+                except Exception as e:
+                    logger.error(f'Error al leer Excel: {str(e)}', exc_info=True)
+                    raise ETLException(f'Error al leer el archivo Excel. Verificá que sea un .xlsx válido: {str(e)}')
+                finally:
+                    try:
+                        os.unlink(tmp_path)
+                    except Exception:
+                        pass
             else:
                 raise ETLException('Formato de archivo no soportado. Use CSV o Excel.')
 
